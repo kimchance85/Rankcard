@@ -135,22 +135,22 @@
     <!-- Quick Actions -->
     <div class="quickbar" aria-label="빠른 설정">
       <div class="grid">
-        <input id="nameInput" type="text" placeholder="이름 / 닉네임 (예: CHANCE KIM)" />
+        <input id="nameInput" type="text" placeholder="이름 (예: 김 진래)" />
         <select id="rankSelect" title="타이틀 선택 시 프레임/배경 자동 매핑">
-          <option value="">-- 타이틀 선택 (자동 매핑) --</option>
+          <option value="">-- 타이틀 --</option>
           <option>CORE 600</option>
           <option>CORE 1250</option>
           <option>CORE 2500</option>
           <option>CORE 5000</option>
         </select>
-        <button class="savebtn" id="saveBtn" type="button">📥 PNG 저장</button>
+        <button class="savebtn" id="saveBtn" type="button">📥 카드 저장</button>
       </div>
       <div class="inline" style="margin-top:8px">
         <label style="display:flex;align-items:center;gap:8px;margin:0">
           <input id="octoToggle" type="checkbox" />
           <span style="font-size:14px;color:#ff8fa3">이름 옆 <b style="color:#ff2d55">OCTOPUS</b> 표시</span>
         </label>
-        <span class="pill">자동매핑·프리셋·수동설정 모두 지원</span>
+        <span class="pill">수동설정 하기기</span>
       </div>
     </div>
 
@@ -621,3 +621,4 @@ fontIds.forEach(id=>{fontInputs[id].addEventListener('input',()=>{const v=parseI
 </body>
 
 </html>
+
