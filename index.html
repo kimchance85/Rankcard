@@ -6,138 +6,185 @@
 <title>TEAM CHANCE RANKCARD</title>
 
 <style>
+  /* ============================================================
+    CSS (스타일) 영역
+    이곳에서 카드의 디자인, 레이아웃, 색상 등 모든 시각적인 부분을 제어합니다.
+    ============================================================
+  */
+
+  /* :root는 문서 전체에서 사용할 수 있는 '변수'를 선언하는 곳입니다. */
+  /* 여기서 색상이나 크기를 한번만 바꿔주면, 이 변수를 사용하는 모든 곳이 한번에 바뀝니다. 유지보수에 매우 편리합니다. */
   :root{
+    /* --cardH: 카드의 세로 높이, --ratio: 가로세로 비율. --cardW는 높이를 비율로 나눠서 자동으로 계산됩니다. */
     --cardH:720px; --ratio:1.5858; --cardW:calc(var(--cardH)/var(--ratio));
-    --bg:#0f1118; --panel:#171923; --line:#262b3a; --soft:#2a3145;
-    --ink:#fff; --muted:#a7adc0; --card:#111522; --cardLine:#28314a;
-    --accent:#6aa8ff; --octo-red:#ff2d55;
+    
+    /* 색상 변수들: 전체적인 테마 색상을 여기서 관리합니다. */
+    --bg:#0f1118;      /* 전체 페이지 배경색 */
+    --panel:#171923;    /* 컨트롤 패널, 캔버스 배경색 */
+    --line:#262b3a;     /* 패널 테두리 색상 */
+    --soft:#2a3145;     /* input, select 등 컨트롤 요소 테두리 색상 */
+    --ink:#fff;         /* 기본 글자 색 (흰색) */
+    --muted:#a7adc0;    /* 약간 흐린 글자 색 (도움말 텍스트 등) */
+    --card:#111522;     /* 카드 자체의 기본 배경색 */
+    --cardLine:#28314a; /* 카드 테두리 색 */
+    --accent:#6aa8ff;   /* 프로필 테두리 등 포인트 색상 */
+    --octo-red:#ff2d55; /* OCTOPUS 태그 전용 빨간색 */
 
-    /* 위치/폰트 변수 (요청 기본값 반영) */
-    --badgeY:0px;   /* 배지 */
-    --ppY:7px;      /* 프로필 */
-    --nameY:6px;    /* 이름 */
-    --rankY:7px;    /* 타이틀 */
-    --brandY:11px;  /* 브랜드 */
-    --socketY:32px; /* 소켓 */
-    --neonY:-25px;  /* 네온 */
-    --footerY:-5px; /* 하단문구 */
+    /* 요소 위치(Y축) 변수들: JavaScript에서 이 값들을 변경하여 각 요소의 상하 위치를 조절합니다.
+      단위는 px(픽셀)이며, 양수 값은 아래로, 음수 값은 위로 이동합니다.
+    */
+    --badgeY:0px;    /* 배지 */
+    --ppY:7px;       /* 프로필 사진 */
+    --nameY:6px;     /* 이름 */
+    --rankY:7px;     /* 타이틀 */
+    --brandY:11px;   /* 팀 이름(브랜드) */
+    --socketY:32px;  /* 소켓 */
+    --neonY:-25px;   /* 네온 이미지 */
+    --footerY:-5px;  /* 하단 문구 */
 
-    --nameFont:30px; --rankFont:24px; --brandFont:18px; --footerFont:14px;
+    /* 폰트 크기 변수들: JavaScript에서 이 값들을 변경하여 글자 크기를 조절합니다. */
+    --nameFont:30px; 
+    --rankFont:24px; 
+    --brandFont:18px; 
+    --footerFont:14px;
   }
+  
+  /* 모든 요소에 적용되는 기본 스타일. box-sizing은 테두리를 포함해서 크기를 계산하게 만들어 레이아웃 잡기 편하게 합니다. */
   *{box-sizing:border-box}
+
+  /* body: 전체 페이지의 기본 스타일을 정의합니다. */
   body{
-    margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Noto Sans KR",Segoe UI,Roboto,sans-serif;color:var(--ink);
-    display:flex;align-items:flex-start;justify-content:center;min-height:100vh;padding:14px
+    margin:0; background:var(--bg); font-family:system-ui,-apple-system,"Noto Sans KR",Segoe UI,Roboto,sans-serif; color:var(--ink);
+    display:flex; align-items:flex-start; justify-content:center; min-height:100vh; padding:14px
   }
-  .wrap{width:min(880px, 94vw);display:grid;grid-template-columns:1.2fr .9fr;gap:14px}
+
+  /* .wrap: 컨트롤 패널과 카드 미리보기를 감싸는 전체 컨테이너입니다. */
+  .wrap{width:min(880px, 94vw); display:grid; grid-template-columns:1.2fr .9fr; gap:14px}
+  
+  /* @media: 화면 크기에 따른 반응형 디자인을 설정합니다. 화면 가로폭이 980px 이하일 때 컨트롤 패널과 카드가 세로로 배치됩니다. */
   @media (max-width:980px){ .wrap{grid-template-columns:1fr} }
 
-  /* ---------- 컨트롤 ---------- */
+  /* ---------- 컨트롤 패널 스타일 ---------- */
   .controls{
-    position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px
+    position:relative; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:12px
   }
+  /* 이하 컨트롤 패널 내부의 제목(h2), 작은 글씨(small), 라벨(label) 등의 스타일입니다. */
   .controls h2{
-    font-size:16px;margin:0 0 8px 0;font-weight:800;letter-spacing:.2px
+    font-size:16px; margin:0 0 8px 0; font-weight:800; letter-spacing:.2px
   }
   .controls small.help{color:var(--muted)}
-  .controls label{display:block;font-size:13px;color:var(--muted);margin-top:6px}
+  .controls label{display:block; font-size:13px; color:var(--muted); margin-top:6px}
   .controls input,.controls select,.controls button{
-    width:100%;margin-top:6px;background:#10131b;color:#fff;border:1px solid var(--soft);
-    border-radius:10px;padding:10px 12px;font-size:15px
+    width:100%; margin-top:6px; background:#10131b; color:#fff; border:1px solid var(--soft);
+    border-radius:10px; padding:10px 12px; font-size:15px
   }
   .controls input[type="number"]{text-align:center}
   .btn{cursor:pointer}
-  .btn-square{padding:10px 0;text-align:center}
-  .row{display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:8px}
-  .row-2auto{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
-  .row-3{display:grid;grid-template-columns:auto 1fr auto auto;gap:6px;align-items:center}
-  .inline{display:flex;align-items:center;gap:10px}
-  .subgrid{display:grid;grid-template-columns:repeat(auto-fit, minmax(160px,1fr));gap:8px}
+  .btn-square{padding:10px 0; text-align:center}
+  .row{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px} /* 2열 그리드 */
+  .row-2auto{display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center}
+  .row-3{display:grid; grid-template-columns:auto 1fr auto auto; gap:6px; align-items:center}
+  .inline{display:flex; align-items:center; gap:10px}
+  .subgrid{display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:8px}
 
-  /* 상단 퀵액션 바 */
+  /* 상단 빠른 설정 바 (화면 스크롤 시 상단에 고정됨) */
   .quickbar{
-    position:sticky;top:8px;z-index:50;background:rgba(23,25,35,.85);
-    backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px
+    position:sticky; top:8px; z-index:50; background:rgba(23,25,35,.85);
+    backdrop-filter:blur(6px); border:1px solid var(--line); border-radius:12px; padding:10px; margin-bottom:10px
   }
   .quickbar .grid{
-    display:grid;grid-template-columns:1fr 0.9fr auto;gap:8px;align-items:center
+    display:grid; grid-template-columns:1fr 0.9fr auto; gap:8px; align-items:center
   }
   @media (max-width:980px){
     .quickbar .grid{grid-template-columns:1fr}
     .savebtn{width:100%}
   }
 
-  /* details 섹션 */
+  /* details/summary 태그: 접고 펼 수 있는 섹션을 만듭니다. */
   details{
-    border:1px solid var(--line);border-radius:12px;padding:0;margin-top:10px;background:#121523
+    border:1px solid var(--line); border-radius:12px; padding:0; margin-top:10px; background:#121523
   }
   summary{
-    list-style:none;cursor:pointer;padding:12px 14px;border-radius:12px;user-select:none;
-    display:flex;align-items:center;gap:10px;font-weight:800
+    list-style:none; cursor:pointer; padding:12px 14px; border-radius:12px; user-select:none;
+    display:flex; align-items:center; gap:10px; font-weight:800
   }
-  summary .hint{color:var(--muted);font-weight:600;font-size:12px;margin-left:auto}
-  details[open] summary{border-bottom:1px solid var(--line);border-bottom-left-radius:0;border-bottom-right-radius:0}
+  summary .hint{color:var(--muted); font-weight:600; font-size:12px; margin-left:auto}
+  details[open] summary{border-bottom:1px solid var(--line); border-bottom-left-radius:0; border-bottom-right-radius:0}
   .section-body{padding:12px 14px}
   .pill{
-    display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#0e1220;border:1px solid #27314b;
-    font-size:12px;color:#a7adc0
+    display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#0e1220; border:1px solid #27314b;
+    font-size:12px; color:#a7adc0
   }
 
-  /* 저장 버튼(퀵바 내) */
-  .savebtn{padding:12px 14px;border:none;border-radius:10px;background:#3b82f6;color:#fff;font-size:16px;font-weight:800;cursor:pointer}
+  /* 저장 버튼 스타일 */
+  .savebtn{padding:12px 14px; border:none; border-radius:10px; background:#3b82f6; color:#fff; font-size:16px; font-weight:800; cursor:pointer}
   .savebtn:active{transform:translateY(1px)}
 
-  /* 포지션/폰트 표 */
-  .pos-grid{display:grid;grid-template-columns:1fr 92px 44px 44px 56px;gap:6px;align-items:center}
-  .slider-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+  /* 위치/폰트 조정 테이블 스타일 */
+  .pos-grid{display:grid; grid-template-columns:1fr 92px 44px 44px 56px; gap:6px; align-items:center}
+  .slider-row{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center}
 
-  /* ---------- 카드 ---------- */
+  /* ---------- 카드 디자인 ---------- */
+  /* .canvas: 카드 미리보기를 감싸는 패널 */
   .canvas{
-    background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px
+    background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:12px
   }
+  /* .card: 실제 카드의 본체. 크기, 배경, 테두리 등 핵심 디자인을 담당합니다. */
   .card{
-    position:relative;width:var(--cardW);height:var(--cardH);
-    background:var(--card);border:1px solid var(--cardLine);border-radius:22px;
-    padding:16px 16px 200px;text-align:center;box-shadow:0 10px 28px rgba(0,0,0,.35);
-    overflow:hidden;margin:0 auto;background-repeat:no-repeat;background-position:center;background-size:cover;color:var(--ink)
+    position:relative; width:var(--cardW); height:var(--cardH); /* 위에서 정의한 변수로 크기 설정 */
+    background:var(--card); border:1px solid var(--cardLine); border-radius:22px;
+    padding:16px 16px 200px; text-align:center; box-shadow:0 10px 28px rgba(0,0,0,.35);
+    overflow:hidden; /* 카드를 벗어나는 내용은 숨김 */
+    margin:0 auto; background-repeat:no-repeat; background-position:center; background-size:cover; color:var(--ink)
   }
-  .frame{position:absolute;inset:0;border-radius:22px;pointer-events:none;z-index:10;box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)}
-  .frame-img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;border-radius:22px;pointer-events:none;z-index:11;display:none}
 
-  .badge{display:inline-block;padding:12px 18px;border-radius:999px;font-weight:800;letter-spacing:.4px;border:1px solid rgba(255,255,255,.28);margin-top:10px;margin-bottom:25px;font-size:28px;background:rgba(0,0,0,.18);transform:translateY(var(--badgeY))}
-  .pp{width:170px;height:170px;border-radius:50%;overflow:hidden;border:4px solid var(--accent);margin:4px auto 12px;position:relative;background:#1a1c24;touch-action:none;transform:translateY(var(--ppY))}
-  .pp img{position:absolute;left:0;top:0;width:100%;height:auto;user-select:none;cursor:grab;display:none;image-orientation:from-image}
-  .placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:56px;color:#555}
+  /* .frame: 카드 테두리 효과를 주는 요소. 기본 테두리 또는 이미지 프레임이 표시됩니다. */
+  .frame{position:absolute; inset:0; border-radius:22px; pointer-events:none; z-index:10; box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)}
+  .frame-img{position:absolute; inset:0; width:100%; height:100%; object-fit:fill; border-radius:22px; pointer-events:none; z-index:11; display:none}
 
-  .name{font-size:var(--nameFont);font-weight:800;margin:4px 0;transform:translateY(var(--nameY))}
-  .name .octo-tag{margin-left:8px;font-size:.72em;font-weight:900;letter-spacing:.8px;color:var(--octo-red);display:none}
-  .rank{font-size:var(--rankFont);font-weight:900;letter-spacing:.8px;display:none;margin-bottom:8px;transform:translateY(var(--rankY))}
-  .brand{font-size:var(--brandFont);font-weight:800;margin:6px 0 10px;letter-spacing:.6px;text-transform:uppercase;transform:translateY(var(--brandY))}
+  /* .badge: 상단에 표시되는 "Congratulations!!" 배지 */
+  .badge{display:inline-block; padding:12px 18px; border-radius:999px; font-weight:800; letter-spacing:.4px; border:1px solid rgba(255,255,255,.28); margin-top:10px; margin-bottom:25px; font-size:28px; background:rgba(0,0,0,.18); transform:translateY(var(--badgeY))}
 
-  .sockets{display:grid;justify-content:center;gap:10px;margin-top:6px;grid-template-columns:56px;transform:translateY(var(--socketY))}
-  .sockets.cols2{grid-template-columns:repeat(2,56px)}
-  .sockets.cols3{grid-template-columns:repeat(3,56px)}
-  .sockets.cols4{grid-template-columns:repeat(2,56px)}
-  .socket{width:56px;height:56px;border-radius:12px;background:transparent;border:none;color:rgba(255,255,255,.32);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;outline:1px dashed rgba(255,255,255,.18)}
-  .socket img{width:100%;height:100%;object-fit:contain;border-radius:12px}
-  .socket.has-img{outline:none}
+  /* .pp: 프로필 사진을 감싸는 원형 컨테이너 */
+  .pp{width:170px; height:170px; border-radius:50%; overflow:hidden; border:4px solid var(--accent); margin:4px auto 12px; position:relative; background:#1a1c24; touch-action:none; transform:translateY(var(--ppY))}
+  /* .pp img: 실제 프로필 사진 이미지. JavaScript로 위치와 크기가 조절됩니다. */
+  .pp img{position:absolute; left:0; top:0; width:100%; height:auto; user-select:none; cursor:grab; display:none; image-orientation:from-image}
+  /* .placeholder: 프로필 사진이 없을 때 표시되는 아이콘 */
+  .placeholder{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:56px; color:#555}
 
-  .neon-image-block{margin-top:16px;transform:translateY(var(--neonY))}
-  .neon-image-block img{max-width:80%;height:auto;display:block;margin:0 auto}
+  /* .name, .rank, .brand: 이름, 타이틀, 팀 이름 텍스트 스타일 */
+  .name{font-size:var(--nameFont); font-weight:800; margin:4px 0; transform:translateY(var(--nameY))}
+  .name .octo-tag{margin-left:8px; font-size:.72em; font-weight:900; letter-spacing:.8px; color:var(--octo-red); display:none}
+  .rank{font-size:var(--rankFont); font-weight:900; letter-spacing:.8px; display:none; margin-bottom:8px; transform:translateY(var(--rankY))}
+  .brand{font-size:var(--brandFont); font-weight:800; margin:6px 0 10px; letter-spacing:.6px; text-transform:uppercase; transform:translateY(var(--brandY))}
 
-  .footer-text{position:absolute;bottom:20px;left:0;right:0;font-size:var(--footerFont);font-weight:600;line-height:1.3;text-align:center;color:var(--ink);opacity:.9;z-index:2;transform:translateY(var(--footerY))}
+  /* .sockets: 소켓 이미지들을 담는 컨테이너. 그리드 레이아웃을 사용합니다. */
+  .sockets{display:grid; justify-content:center; gap:10px; margin-top:6px; grid-template-columns:56px; transform:translateY(var(--socketY))}
+  .sockets.cols2{grid-template-columns:repeat(2,56px)} /* 소켓이 2개일 때 2열 */
+  .sockets.cols3{grid-template-columns:repeat(3,56px)} /* 소켓이 3개일 때 3열 */
+  .sockets.cols4{grid-template-columns:repeat(2,56px)} /* 소켓이 4개일 때 다시 2열 (2x2) */
+
+  /* .socket: 개별 소켓 아이템. */
+  .socket{width:56px; height:56px; border-radius:12px; background:transparent; border:none; color:rgba(255,255,255,.32); display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer; outline:1px dashed rgba(255,255,255,.18)}
+  .socket img{width:100%; height:100%; object-fit:contain; border-radius:12px}
+  .socket.has-img{outline:none} /* 이미지가 있으면 점선 테두리 제거 */
+
+  /* .neon-image-block: 네온 이미지 컨테이너 */
+  .neon-image-block{margin-top:16px; transform:translateY(var(--neonY))}
+  .neon-image-block img{max-width:80%; height:auto; display:block; margin:0 auto}
+
+  /* .footer-text: 카드 하단에 고정된 문구 */
+  .footer-text{position:absolute; bottom:20px; left:0; right:0; font-size:var(--footerFont); font-weight:600; line-height:1.3; text-align:center; color:var(--ink); opacity:.9; z-index:2; transform:translateY(var(--footerY))}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <!-- ========= LEFT: CONTROLS ========= -->
   <div class="controls">
-    <!-- Quick Actions -->
     <div class="quickbar" aria-label="빠른 설정">
       <div class="grid">
         <input id="nameInput" type="text" placeholder="이름 (예: 김 진래)" />
         <select id="rankSelect" title="타이틀 선택 시 프레임/배경 자동 매핑">
-          <option value="">-- 타이틀 --</option>
+          <option value="">-- RANK --</option>
           <option>CORE 600</option>
           <option>CORE 1250</option>
           <option>CORE 2500</option>
@@ -150,13 +197,12 @@
           <input id="octoToggle" type="checkbox" />
           <span style="font-size:14px;color:#ff8fa3">이름 옆 <b style="color:#ff2d55">OCTOPUS</b> 표시</span>
         </label>
-        <span class="pill">수동설정 하기기</span>
+        <span class="pill">옥토퍼스 수료한 경우만 체크</span>
       </div>
     </div>
 
-    <!-- 프레임 & 배경 -->
     <details open>
-      <summary>🖼️ 프레임/배경 <span class="hint">자동매핑 · 프리셋 · 파일</span></summary>
+      <summary>🖼️ 프레임/배경 <span class="hint">프레임/배경 수동설정(커스터 마이징)</span></summary>
       <div class="section-body subgrid">
         <div>
           <label>프레임 수동 설정</label>
@@ -190,14 +236,13 @@
         <div>
           <label>배경 채우기 방식</label>
           <select id="bgFit">
-            <option value="cover" selected>채우기</option>
-            <option value="contain">맞춤</option>
+            <option value="cover" selected>채우기 (cover)</option>
+            <option value="contain">맞춤 (contain)</option>
           </select>
         </div>
       </div>
     </details>
 
-    <!-- 프로필 -->
     <details open>
       <summary>👤 프로필 <span class="hint">업로드 · 위치/줌 조정</span></summary>
       <div class="section-body">
@@ -215,7 +260,6 @@
       </div>
     </details>
 
-    <!-- 소켓 -->
     <details open>
       <summary>🧩 소켓 <span class="hint">프리셋 · 파일 · 삭제</span></summary>
       <div class="section-body">
@@ -240,7 +284,6 @@
       </div>
     </details>
 
-    <!-- 네온 텍스트/이미지 -->
     <details>
       <summary>✨ 네온 프리셋/파일 <span class="hint">장식 이미지</span></summary>
       <div class="section-body subgrid">
@@ -262,7 +305,6 @@
       </div>
     </details>
 
-    <!-- 배경 오버레이 -->
     <details>
       <summary>🎨 배경 오버레이 <span class="hint">색상/투명도</span></summary>
       <div class="section-body">
@@ -279,7 +321,6 @@
       </div>
     </details>
 
-    <!-- 세밀 조정: 위치 (요청 기본값 반영) -->
     <details open>
       <summary>🧭 세밀 조정: 요소 위치 <span class="hint">상하(px) · ± 버튼</span></summary>
       <div class="section-body">
@@ -294,7 +335,6 @@
       </div>
     </details>
 
-    <!-- 세밀 조정: 폰트 -->
     <details>
       <summary>🔤 세밀 조정: 폰트 크기 <span class="hint">px · ± 버튼</span></summary>
       <div class="section-body">
@@ -306,7 +346,6 @@
     </details>
   </div>
 
-  <!-- ========= RIGHT: CANVAS ========= -->
   <div class="canvas">
     <h2 style="margin:0 0 8px 0">미리보기</h2>
     <div class="card" id="card" role="img" aria-label="Team Chance 카드">
@@ -331,54 +370,78 @@
   </div>
 </div>
 
-<!-- libs -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-/* ========= 셀렉터 ========= */
+/* ============================================================
+  JavaScript (기능) 영역
+  웹 페이지의 모든 동적인 기능을 담당합니다. 
+  사용자가 버튼을 누르거나, 파일을 선택하거나, 글자를 입력하는 등의 행동에 반응하여
+  카드 미리보기를 실시간으로 업데이트하고, 최종적으로 이미지를 저장하는 역할을 합니다.
+  ============================================================
+*/
+
+/* ========= 셀렉터 헬퍼 함수 ========= */
+// document.querySelector를 짧게 쓰기 위한 단축 함수입니다.
 const $$=(s)=>document.querySelector(s);
+// document.querySelectorAll을 짧게 쓰고, 결과를 실제 배열로 변환하는 단축 함수입니다.
 const $all=(s,root=document)=>Array.from(root.querySelectorAll(s));
 
-/* ========= 상수 ========= */
+/* ========= 상수 (기본 설정값) ========= */
+// 이 부분은 카드의 기본 데이터를 정의하는 곳입니다. 새로운 랭크나 프리셋을 추가하려면 여기를 수정하면 됩니다.
+
+// 각 랭크(타이틀)별 포인트 색상을 정의합니다. 
+// 여기에 새 랭크를 추가하면 (예: "CORE 10000":"#ff00ff"), 해당 랭크 선택 시 프로필 테두리와 랭크 텍스트 색상이 자동으로 바뀝니다.
 const COLORS={ "CORE 600":"#bfbfbf", "CORE 1250":"#4caf50", "CORE 2500":"#2196f3", "CORE 5000":"#ffeb3b" };
 
-/* (중요) jsDelivr 다중 베이스: @master 우선 → 무버전 폴백 */
+/* (중요) jsDelivr CDN 주소: 프레임, 배경, 소켓 등 기본 이미지들이 저장된 웹 주소입니다. */
+// @master가 붙은 첫 번째 주소를 우선적으로 시도하고, 실패하면 두 번째 주소를 시도하여 안정성을 높입니다.
 const CDN_BASES = [
-  "https://cdn.jsdelivr.net/gh/kimchance85/Rankcard@master/assets/",
-  "https://cdn.jsdelivr.net/gh/kimchance85/Rankcard/assets/",
+  "https://cdn.jsdelivr.net/gh/kimchance85/Rankcard@master/assets/", // 1순위
+  "https://cdn.jsdelivr.net/gh/kimchance85/Rankcard/assets/",      // 2순위 (폴백)
 ];
 
-/* 직접 파일명(프리셋/소켓 등)을 불러올 때 1순위 베이스 사용 */
+/* 프리셋/소켓 이미지를 불러올 때 사용할 기본 URL을 만듭니다. */
 const assetUrl = (path) => CDN_BASES[0] + path;
 
-/* 후보 확장자: PNG → WEBP → JPG → JPEG */
+/* 이미지 로드 시도 순서: PNG -> WEBP -> JPG -> JPEG. 이 순서대로 파일을 찾아봅니다. */
 const EXT_CANDIDATES = ['.png', '.webp', '.jpg', '.jpeg'];
 
-/* 유틸: 첫 번째로 로드 성공하는 URL 반환 (베이스×확장자 모두 시도) */
+/* 유틸리티 함수: 사용 가능한 첫 번째 이미지 URL을 찾아 반환합니다.
+  예를 들어 'frame-core-600' 이라는 이름으로 이미지를 찾을 때,
+  1. 1번 CDN 주소 + frame-core-600.png
+  2. 1번 CDN 주소 + frame-core-600.webp
+  ...
+  3. 2번 CDN 주소 + frame-core-600.png
+  ...
+  이런 식으로 모든 조합을 시도해서 가장 먼저 성공하는 이미지 주소를 찾아냅니다.
+  이를 통해 이미지 파일의 확장자가 다르거나, CDN 서버에 문제가 생겨도 유연하게 대처할 수 있습니다.
+*/
 async function loadFirstAvailable(basePathNoExt){
   for (const base of CDN_BASES){
     for (const ext of EXT_CANDIDATES){
       const url = base + basePathNoExt + ext;
       const ok = await new Promise(res=>{
         const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload  = ()=>res(true);
-        img.onerror = ()=>res(false);
+        img.crossOrigin = 'anonymous'; // 다른 도메인의 이미지를 불러올 때 필요
+        img.onload  = ()=>res(true);  // 로드 성공 시 true 반환
+        img.onerror = ()=>res(false); // 로드 실패 시 false 반환
         img.src = url;
       });
-      if(ok) return url;
+      if(ok) return url; // 성공하면 즉시 URL 반환
     }
   }
-  throw new Error('No asset found: ' + basePathNoExt);
+  throw new Error('No asset found: ' + basePathNoExt); // 모든 시도가 실패하면 에러 발생
 }
 
-/* 랭크 자동 매핑(확장자 없이 “베이스 이름”만 기록) */
+/* 랭크 선택 시 자동으로 매핑될 프레임 이미지 파일 이름 (확장자 제외) */
 const FRAME_BASES={
   "CORE 600":  "frame-core-600",
   "CORE 1250": "frame-core-1250",
   "CORE 2500": "frame-core-2500",
   "CORE 5000": "frame-core-5000",
 };
+/* 랭크 선택 시 자동으로 매핑될 배경 이미지 파일 이름 (확장자 제외) */
 const BG_BASES={
   "CORE 600":  "bg-core-600",
   "CORE 1250": "bg-core-1250",
@@ -386,138 +449,160 @@ const BG_BASES={
   "CORE 5000": "bg-core-5000",
 };
 
-/* ========= DOM 캐시 ========= */
+/* ========= DOM 캐시: 자주 사용하는 HTML 요소들을 미리 변수에 저장해두어 성능을 향상시킵니다. ========= */
 const card=$$('#card'), frame=$$('#frame'), frameImg=$$('#frameImg');
 const sel=$$('#rankSelect'), nameInput=$$('#nameInput'), nameText=$$('#nameText'), rankView=$$('#rankView');
 const ppWrap=$$('#ppWrap'), ppImg=$$('#ppImg'), ppPlaceholder=$$('#ppPlaceholder'), photoInput=$$('#photoInput'), ppReset=$$('#ppReset');
-
 const cardBgColor=$$('#cardBgColor'), cardBgAlpha=$$('#cardBgAlpha'), alphaVal=$$('#alphaVal'), bgFit=$$('#bgFit');
-
 const neonPickBtn=$$('#neonPickBtn'), neonClearBtn=$$('#neonClearBtn'), neonFile=$$('#neonFile'), neonImg=$$('#neonImg');
 const neonPresetSelect=$$('#neonPresetSelect');
-
 const bgPresetSelect=$$('#bgPresetSelect');
-
 const socketPresetSelect=$$('#socketPresetSelect'), addSocketPresetBtn=$$('#addSocketPresetBtn');
-
 const octoToggle=$$('#octoToggle'), octoTag=$$('#octoTag');
-
 const socketsWrap=$$('#sockets'), addSocketFileBtn=$$('#addSocketFile'), socketFile=$$('#socketFile'), removeLastBtn=$$('#removeLast'), socketInfo=$$('#socketInfo');
-
 const saveBtn=$$('#saveBtn');
 
-/* 위치/폰트 */
+/* 위치/폰트 input 요소들을 쉽게 접근할 수 있도록 객체에 저장합니다. */
 const posIds=['badge','pp','name','rank','brand','socket','neon','footer'];
 const posInputs=Object.fromEntries(posIds.map(id=>[id,$$('#pos-'+id)]));
 const fontIds=['nameFont','rankFont','brandFont','footerFont'];
 const fontInputs=Object.fromEntries(fontIds.map(id=>[id,$$('#'+id)]));
 
-/* 프레임/배경 파일 오버라이드 */
+/* 프레임/배경 파일 수동 설정(Override) 관련 요소 및 변수 */
 const pickFrameBtn=$$('#pickFrameFile'), frameFileInput=$$('#frameFileInput'), clearFrameOverrideBtn=$$('#clearFrameOverride');
 const pickBgBtn=$$('#pickBgFile'), bgFileInput=$$('#bgFileInput'), clearBgOverrideBtn=$$('#clearBgOverride');
-let frameOverride=null;  // dataURL
-let bgOverride=null;     // dataURL
-let bgPresetOverride=""; // 파일명 또는 베이스명 (e.g. bg-core-600.png 또는 bg-core-600)
+let frameOverride=null;  // 사용자가 직접 업로드한 프레임 이미지 데이터(dataURL)를 저장할 변수
+let bgOverride=null;     // 사용자가 직접 업로드한 배경 이미지 데이터(dataURL)를 저장할 변수
+let bgPresetOverride=""; // 사용자가 선택한 배경 프리셋 파일명을 저장할 변수
 
-/* ========= 배경 오버레이(색/투명) ========= */
+/* ========= 배경 오버레이(색/투명도) 적용 함수 ========= */
+// 16진수 색상 코드(#ffffff)를 RGB값(r,g,b)으로 변환하는 함수
 function hexToRgb(hex){hex=hex.replace('#','');if(hex.length===3)hex=hex.split('').map(h=>h+h).join('');const n=parseInt(hex,16);return{r:(n>>16)&255,g:(n>>8)&255,b:n&255};}
+// 카드 배경색과 투명도를 적용하는 함수
 function applyCardBg(){
-  const {r,g,b}=hexToRgb(cardBgColor.value); const a=Number(cardBgAlpha.value)/100;
-  card.style.backgroundColor=`rgba(${r},${g},${b},${a})`;
-  alphaVal.textContent=cardBgAlpha.value;
+  const {r,g,b}=hexToRgb(cardBgColor.value); 
+  const a=Number(cardBgAlpha.value)/100; // 투명도 슬라이더 값을 0~1 사이의 값으로 변환
+  card.style.backgroundColor=`rgba(${r},${g},${b},${a})`; // 카드 배경색 설정
+  alphaVal.textContent=cardBgAlpha.value; // 슬라이더 옆 숫자 업데이트
+
+  // 배경색의 밝기를 계산하여 글자색을 자동으로 흰색 또는 검은색으로 변경 (가독성 향상)
   const relLum=(0.2126*(r/255)**2.2 + 0.7152*(g/255)**2.2 + 0.0722*(b/255)**2.2) * a;
   card.style.color=(relLum>0.4)?'#111':'#fff';
 }
+// 색상 선택기나 투명도 슬라이더 값이 바뀔 때마다 applyCardBg 함수를 호출
 cardBgColor.addEventListener('input',applyCardBg);
 cardBgAlpha.addEventListener('input',applyCardBg);
+// 배경 채우기 방식(cover/contain)이 변경될 때 카드 배경 스타일을 업데이트
 bgFit.addEventListener('change',e=>{ card.style.backgroundSize=e.target.value; });
 
-/* ========= 타이틀 표시 ========= */
+/* ========= 타이틀(랭크) 표시 함수 ========= */
 function applyTitle(title){
-  if(title){ rankView.style.display='block'; const accent=COLORS[title]||"#6aa8ff"; rankView.innerHTML=`<span style="color:${accent}">★ ${title}</span>`; $$('.pp').style.borderColor=accent; }
-  else { rankView.style.display='none'; rankView.innerHTML=''; $$('.pp').style.borderColor='var(--accent)'; }
+  if(title){ // 타이틀이 선택된 경우
+    rankView.style.display='block'; // 타이틀 텍스트를 보이게 함
+    const accent=COLORS[title]||"#6aa8ff"; // COLORS 객체에서 해당 타이틀의 색상을 찾고, 없으면 기본색 사용
+    rankView.innerHTML=`<span style="color:${accent}">★ ${title}</span>`; // 타이틀 텍스트와 색상 적용
+    $$('.pp').style.borderColor=accent; // 프로필 사진 테두리 색상도 변경
+  }
+  else { // 타이틀이 선택되지 않은 경우
+    rankView.style.display='none'; // 타이틀 텍스트 숨김
+    rankView.innerHTML='';
+    $$('.pp').style.borderColor='var(--accent)'; // 프로필 테두리 색상을 기본값으로
+  }
 }
 
-/* 보조: 확장자 제거 */
+/* 보조 함수: 파일 이름에서 확장자(.png 등)를 제거합니다. */
 function stripExt(name){ return (name||'').replace(/\.(png|webp|jpg|jpeg)$/i,''); }
 
-/* ========= 프레임/배경 적용 우선순위 =========
-   1) frameOverride / bgOverride (파일 업로드)
-   2) bgPresetSelect(배경 프리셋)
-   3) 랭크 자동 매핑 (FRAME_BASES / BG_BASES)
+/* ========= 프레임/배경 적용 우선순위 로직 =========
+  아래 함수들은 어떤 프레임과 배경을 보여줄지 결정합니다. 우선순위는 다음과 같습니다.
+  1순위: 사용자가 직접 업로드한 파일 (frameOverride, bgOverride)
+  2순위: 사용자가 선택한 프리셋 (bgPresetOverride)
+  3순위: 타이틀(랭크)에 따라 자동으로 매핑된 이미지 (FRAME_BASES, BG_BASES)
+  4순위: 모두 없을 경우 기본 스타일
 */
+// 타이틀에 맞는 프레임을 적용하는 함수
 async function applyFrameForRank(title){
-  const viaUpload = frameOverride;
-  if(viaUpload){
-    frame.style.boxShadow='none';
-    frameImg.src = viaUpload;
+  // 1순위: 사용자가 업로드한 프레임이 있는지 확인
+  if(frameOverride){
+    frame.style.boxShadow='none'; // 기본 테두리 효과 제거
+    frameImg.src = frameOverride; // 업로드한 이미지 적용
     frameImg.style.display='block';
     return;
   }
+  // 3순위: 타이틀에 매핑된 프레임 베이스 이름 가져오기
   const base = FRAME_BASES[title];
-  if(!base){
+  if(!base){ // 매핑된 프레임이 없으면
     frameImg.removeAttribute('src');
     frameImg.style.display='none';
-    frame.style.boxShadow='inset 0 0 0 2px rgba(255,255,255,.18)';
+    frame.style.boxShadow='inset 0 0 0 2px rgba(255,255,255,.18)'; // 기본 테두리 효과 표시
     return;
   }
-  try{
+  try{ // loadFirstAvailable 함수로 실제 이미지 URL 찾기
     const url = await loadFirstAvailable(base);
     frame.style.boxShadow='none';
     frameImg.src = url;
     frameImg.style.display='block';
-  }catch(e){
+  }catch(e){ // 이미지 로드에 실패하면
     frameImg.removeAttribute('src');
     frameImg.style.display='none';
     frame.style.boxShadow='inset 0 0 0 2px rgba(255,255,255,.18)';
   }
 }
 
+// 타이틀에 맞는 배경을 적용하는 함수
 async function applyBgForRank(title){
   let url = "";
+  // 1순위: 사용자가 업로드한 배경이 있는지 확인
   if(bgOverride){
     url = bgOverride;
-  }else if(bgPresetOverride){
-    // 프리셋 값이 'bg-core-600' 또는 'bg-core-600.png' 모두 허용
-    const base = stripExt(bgPresetOverride);
+  }
+  // 2순위: 사용자가 선택한 배경 프리셋이 있는지 확인
+  else if(bgPresetOverride){
+    const base = stripExt(bgPresetOverride); // 확장자 제거
     try{
-      url = await loadFirstAvailable(base);
-    }catch(e){
-      url = ""; // 프리셋 실패 시 아래 자동 매핑 시도
-    }
+      url = await loadFirstAvailable(base); // 실제 이미지 URL 찾기
+    }catch(e){ url = ""; }
   }
 
+  // 1, 2순위에서 URL을 못 찾았고, 3순위(자동 매핑) 조건이 맞으면 시도
   if(!url && title && BG_BASES[title]){
     try{
       url = await loadFirstAvailable(BG_BASES[title]);
-    }catch(e){
-      url = "";
-    }
+    }catch(e){ url = ""; }
   }
 
+  // 최종적으로 찾은 URL을 카드 배경 이미지로 설정
   card.style.backgroundImage = url ? `url(${url})` : '';
-  card.style.backgroundSize = bgFit.value;
+  card.style.backgroundSize = bgFit.value; // 배경 채우기 방식 적용
 }
 
+// 프레임과 배경을 한 번에 업데이트하는 함수
 function updateFrameAndBg(){
   const title=sel.value||"";
   applyFrameForRank(title);
   applyBgForRank(title);
 }
 
-/* 타이틀 변경 */
-sel.addEventListener('change',()=>{ applyTitle(sel.value); updateFrameAndBg(); });
+/* ========= 이벤트 리스너: 사용자의 행동에 반응하는 부분 ========= */
 
-/* 프레임 업로드 */
-pickFrameBtn.addEventListener('click',()=>frameFileInput.click());
+// 타이틀(랭크) 선택이 변경되었을 때
+sel.addEventListener('change',()=>{ 
+  applyTitle(sel.value); // 타이틀 텍스트와 색상 업데이트
+  updateFrameAndBg(); // 프레임과 배경 업데이트
+});
+
+/* 프레임 파일 업로드 관련 */
+pickFrameBtn.addEventListener('click',()=>frameFileInput.click()); // '프레임 파일 선택' 버튼 클릭 시 숨겨진 input 클릭
 frameFileInput.addEventListener('change',e=>{
   const f=e.target.files?.[0]; if(!f) return;
-  const r=new FileReader(); r.onload=ev=>{ frameOverride=ev.target.result; updateFrameAndBg(); };
-  r.readAsDataURL(f); frameFileInput.value="";
+  const r=new FileReader(); // FileReader 객체로 파일 읽기
+  r.onload=ev=>{ frameOverride=ev.target.result; updateFrameAndBg(); }; // 파일 읽기가 끝나면 frameOverride 변수에 저장하고 업데이트
+  r.readAsDataURL(f); // 파일을 Data URL 형태로 읽기 시작
+  frameFileInput.value=""; // 다음 선택을 위해 input 값 비우기
 });
-clearFrameOverrideBtn.addEventListener('click',()=>{ frameOverride=null; updateFrameAndBg(); });
+clearFrameOverrideBtn.addEventListener('click',()=>{ frameOverride=null; updateFrameAndgwBg(); }); // '수동 해제' 버튼 클릭 시 override 변수 비우고 업데이트
 
-/* 배경 업로드 */
+/* 배경 파일 업로드 관련 (프레임과 동일한 로직) */
 pickBgBtn.addEventListener('click',()=>bgFileInput.click());
 bgFileInput.addEventListener('change',e=>{
   const f=e.target.files?.[0]; if(!f) return;
@@ -526,19 +611,19 @@ bgFileInput.addEventListener('change',e=>{
 });
 clearBgOverrideBtn.addEventListener('click',()=>{ bgOverride=null; updateFrameAndBg(); });
 
-/* 배경 프리셋 */
+/* 배경 프리셋 선택 관련 */
 bgPresetSelect.addEventListener('change',()=>{
   bgPresetOverride = bgPresetSelect.value || "";
   updateFrameAndBg();
 });
 
-/* 네온 프리셋 */
+/* 네온 프리셋 선택 관련 */
 neonPresetSelect.addEventListener('change',()=>{
   const v=neonPresetSelect.value;
   if(v){ neonImg.src = assetUrl(v); neonImg.style.display='block'; }
   else { neonImg.removeAttribute('src'); neonImg.style.display='none'; }
 });
-/* 네온 업로드(프리셋보다 우선) */
+/* 네온 파일 업로드 관련 (프레임/배경과 유사) */
 neonPickBtn.addEventListener('click',()=>neonFile.click());
 neonFile.addEventListener('change',e=>{
   const f=e.target.files?.[0]; if(!f) return;
@@ -547,78 +632,125 @@ neonFile.addEventListener('change',e=>{
 });
 neonClearBtn.addEventListener('click',()=>{ neonImg.removeAttribute('src'); neonImg.style.display='none'; });
 
-/* 이름 / OCTO */
+/* 이름 입력 / OCTOPUS 태그 토글 */
 nameInput.addEventListener('input',()=>{ nameText.textContent=nameInput.value||"[이름]"; });
 octoToggle.addEventListener('change',()=>{ octoTag.style.display=octoToggle.checked?'inline-block':'none'; });
 
-/* 프로필 드래그/줌 */
+/* ========= 프로필 사진 드래그/줌/핀치 기능 (복잡한 부분) ========= */
+// 이미지의 상태(크기, 위치, 배율 등)를 저장하는 객체
 let imgState={naturalW:0,naturalH:0,baseW:0,baseH:0,scale:1,x:0,y:0,dragging:false,startX:0,startY:0,pinch:false,pinchD0:0,scale0:1};
+// 이미지를 원형 프로필 영역에 꽉 차게 맞추는(cover) 초기화 함수
 function coverFit(){const cw=ppWrap.clientWidth,ch=ppWrap.clientHeight,iw=imgState.naturalW,ih=imgState.naturalH;if(!iw||!ih)return;
   if(iw/ih>=cw/ch){imgState.baseH=ch;imgState.baseW=ch*iw/ih;}else{imgState.baseW=cw;imgState.baseH=cw*ih/iw;}
   imgState.scale=1;imgState.x=(cw-imgState.baseW)/2;imgState.y=(ch-imgState.baseH)/2;applyImgStyle();}
+// 값을 최소(min), 최대(max) 범위 안에 있도록 제한하는 함수
 function clamp(v,min,max){return Math.min(max,Math.max(min,v));}
+// imgState에 저장된 값들을 실제 이미지의 CSS 스타일에 적용하는 함수
 function applyImgStyle(){const w=imgState.baseW*imgState.scale,h=imgState.baseH*imgState.scale,cw=ppWrap.clientWidth,ch=ppWrap.clientHeight;
   const minX=cw-w,maxX=0,minY=ch-h,maxY=0;imgState.x=(w>=cw)?clamp(imgState.x,minX,maxX):(cw-w)/2;imgState.y=(h>=ch)?clamp(imgState.y,minY,maxY):(ch-h)/2;
   ppImg.style.width=w+'px';ppImg.style.height=h+'px';ppImg.style.left=imgState.x+'px';ppImg.style.top=imgState.y+'px';}
+// 마우스 휠 이벤트 (줌 인/아웃)
 ppWrap.addEventListener('wheel',e=>{e.preventDefault();const f=(e.deltaY<0)?1.08:0.92;const old=imgState.scale,neu=clamp(old*f,1,5);
   const r=ppWrap.getBoundingClientRect(),cx=e.clientX-r.left,cy=e.clientY-r.top;const w0=imgState.baseW*old,h0=imgState.baseH*old,w1=imgState.baseW*neu,h1=imgState.baseH*neu;
   const dx=(cx-imgState.x)/w0,dy=(cy-imgState.y)/h0;imgState.x=cx-dx*w1;imgState.y=cy-dy*h1;imgState.scale=neu;applyImgStyle();},{passive:false});
+// 마우스 드래그 시작
 ppWrap.addEventListener('pointerdown',e=>{if(e.pointerType&&e.pointerType!=='mouse')return;e.preventDefault();ppWrap.setPointerCapture(e.pointerId);imgState.dragging=true;imgState.startX=e.clientX-imgState.x;imgState.startY=e.clientY-imgState.y;});
+// 마우스 드래그 중
 ppWrap.addEventListener('pointermove',e=>{if(e.pointerType&&e.pointerType!=='mouse')return;if(!imgState.dragging)return;imgState.x=e.clientX-imgState.startX;imgState.y=e.clientY-imgState.startY;applyImgStyle();});
+// 마우스 드래그 끝
 ppWrap.addEventListener('pointerup',e=>{if(e.pointerType&&e.pointerType!=='mouse')return;imgState.dragging=false;});
 ppWrap.addEventListener('pointercancel',e=>{if(e.pointerType&&e.pointerType!=='mouse')return;imgState.dragging=false;});
+// (모바일) 두 손가락 사이의 거리를 계산하는 함수
 function touchDistance(t){const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.hypot(dx,dy);}
+// (모바일) 두 손가락의 중심점을 계산하는 함수
 function touchCenter(t){return{x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2};}
+// (모바일) 터치 시작 (한 손가락은 드래그, 두 손가락은 핀치 줌)
 ppWrap.addEventListener('touchstart',e=>{if(e.touches.length===1){e.preventDefault();imgState.dragging=true;imgState.startX=e.touches[0].clientX-imgState.x;imgState.startY=e.touches[0].clientY-imgState.y;}
   else if(e.touches.length===2){e.preventDefault();imgState.pinch=true;imgState.pinchD0=touchDistance(e.touches);imgState.scale0=imgState.scale;imgState.center0=touchCenter(e.touches);}}, {passive:false});
+// (모바일) 터치 이동
 ppWrap.addEventListener('touchmove',e=>{if(e.touches.length===1&&imgState.dragging){e.preventDefault();imgState.x=e.touches[0].clientX-imgState.startX;imgState.y=e.touches[0].clientY-imgState.startY;applyImgStyle();}
   else if(e.touches.length===2&&imgState.pinch){e.preventDefault();const d=touchDistance(e.touches);let neu=clamp(imgState.scale0*(d/imgState.pinchD0),1,5);
     const r=ppWrap.getBoundingClientRect();const cNow=touchCenter(e.touches);const cx=cNow.x-r.left,cy=cNow.y-r.top;const old=imgState.scale,w0=imgState.baseW*old,h0=imgState.baseH*old,w1=imgState.baseW*neu,h1=imgState.baseH*neu;
     const dx=(cx-imgState.x)/w0,dy=(cy-imgState.y)/h0;imgState.x=cx-dx*w1;imgState.y=cy-dy*h1;imgState.scale=neu;applyImgStyle();}}, {passive:false});
+// (모바일) 터치 끝
 ppWrap.addEventListener('touchend',e=>{if(e.touches.length===0){imgState.dragging=false;imgState.pinch=false;}if(e.touches.length===1){imgState.pinch=false;}});
+// 프로필 사진 파일이 선택되었을 때
 photoInput.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f){ppImg.style.display='none';ppImg.src='';ppPlaceholder.style.display='flex';return;}
   const r=new FileReader();r.onload=ev=>{ppImg.src=ev.target.result;ppImg.onload=()=>{ppImg.style.display='block';ppPlaceholder.style.display='none';imgState.naturalW=ppImg.naturalWidth;imgState.naturalH=ppImg.naturalHeight;coverFit();};};r.readAsDataURL(f);});
+// '센터로 리셋' 버튼 클릭 시
 ppReset.addEventListener('click',()=>{if(ppImg.src)coverFit();});
 
-/* 소켓 */
+/* ========= 소켓 기능 ========= */
+// 소켓 개수에 따라 레이아웃(열 개수)을 변경하고, 소켓 개수 텍스트를 업데이트하는 함수
 function updateSocketLayout(){const n=$all('.socket',socketsWrap).length;socketsWrap.classList.remove('cols2','cols3','cols4');
   if(n===2)socketsWrap.classList.add('cols2');else if(n===3)socketsWrap.classList.add('cols3');else if(n>=4)socketsWrap.classList.add('cols4');
   socketInfo.textContent=`소켓 ${n}개`; }
+// 새로운 소켓을 추가하는 함수
 function addSocket(src){const el=document.createElement('div');el.className='socket has-img';el.innerHTML=`<img src="${src}" alt="socket">`;socketsWrap.appendChild(el);updateSocketLayout();}
+// '파일로 소켓 추가' 버튼 클릭
 addSocketFileBtn.addEventListener('click',()=>socketFile.click());
+// 소켓 파일이 선택되었을 때 (여러 파일 선택 가능)
 socketFile.addEventListener('change',e=>{(Array.from(e.target.files||[]).filter(f=>f.type.startsWith('image/'))).forEach(file=>{
   const r=new FileReader();r.onload=ev=>addSocket(ev.target.result);r.readAsDataURL(file);});socketFile.value="";});
+// '마지막 소켓 삭제' 버튼 클릭
 removeLastBtn.addEventListener('click',()=>{const items=$all('.socket',socketsWrap);if(!items.length){alert('삭제할 소켓이 없습니다.');return;}items[items.length-1].remove();updateSocketLayout();});
-/* 소켓 프리셋 추가 */
+// '프리셋 추가' 버튼 클릭
 addSocketPresetBtn.addEventListener('click',()=>{const file=socketPresetSelect.value; if(!file) return; addSocket(assetUrl(file));});
 
-/* PNG 저장 */
-async function saveCard(){await new Promise(r=>requestAnimationFrame(r));const canvas=await html2canvas(card,{backgroundColor:null,scale:3,scrollX:0,scrollY:0,useCORS:true});
-  const a=document.createElement('a');const t=sel.value?`_${sel.value}`:'';const n=(nameText.textContent||'card').replace(/\s+/g,'_');a.download=`${n}${t}.png`;a.href=canvas.toDataURL();a.click();}
+/* ========= 카드 저장 기능 ========= */
+async function saveCard(){
+  // requestAnimationFrame: 브라우저가 렌더링을 마친 직후 스크린샷을 찍기 위한 작은 트릭
+  await new Promise(r=>requestAnimationFrame(r));
+  // html2canvas를 사용하여 #card 요소를 캡처. scale:3은 고해상도(3배)로 저장하기 위함.
+  const canvas=await html2canvas(card,{backgroundColor:null,scale:3,scrollX:0,scrollY:0,useCORS:true});
+  
+  // 다운로드 로직
+  const a=document.createElement('a'); // 임시 <a> 태그(링크) 생성
+  const t=sel.value?`_${sel.value}`:''; // 파일명에 타이틀 추가
+  const n=(nameText.textContent||'card').replace(/\s+/g,'_'); // 파일명에 이름 추가 (공백은 _로 변경)
+  a.download=`${n}${t}.png`; // 다운로드될 파일명 설정
+  a.href=canvas.toDataURL(); // 캡처한 이미지를 a 태그의 링크로 설정
+  a.click(); // a 태그를 강제로 클릭하여 다운로드 실행
+}
 saveBtn.addEventListener('click',saveCard);
 
-/* 위치/폰트 ± */
-function setPos(id,px){if(!Number.isFinite(px))return;px=Math.round(px);document.documentElement.style.setProperty('--'+id+'Y',px+'px');posInputs[id].value=px;}
+/* ========= 위치/폰트 세밀 조정 기능 ========= */
+// 요소의 Y축 위치를 설정하는 함수
+function setPos(id,px){if(!Number.isFinite(px))return;px=Math.round(px);
+  // CSS 변수(--idY) 값을 변경하여 실제 요소 위치를 이동
+  document.documentElement.style.setProperty('--'+id+'Y',px+'px');
+  posInputs[id].value=px; // input 필드의 값도 업데이트
+}
+// ± 버튼을 눌렀을 때 위치 값을 1씩 변경하는 함수
 function adjPos(id,delta){const v=parseInt(posInputs[id].value||'0',10)||0;setPos(id,v+delta);}
+// '0' 버튼을 눌렀을 때 위치를 0으로 초기화하는 함수
 function zeroPos(id){setPos(id,0);}
+// 모든 위치 조정 input에 이벤트 리스너를 추가하여, 값이 변경되면 setPos 함수 호출
 posIds.forEach(id=>{posInputs[id].addEventListener('input',()=>{const v=parseInt(posInputs[id].value||'0',10)||0;setPos(id,v);});});
-function setFontVar(id,px){if(!Number.isFinite(px))return;if(px<6)px=6;document.documentElement.style.setProperty('--'+id,px+'px');fontInputs[id].value=px;}
+
+// 폰트 크기를 설정하는 함수 (위치 조정과 로직이 유사)
+function setFontVar(id,px){if(!Number.isFinite(px))return;if(px<6)px=6;
+  document.documentElement.style.setProperty('--'+id,px+'px');
+  fontInputs[id].value=px;
+}
+// ± 버튼으로 폰트 크기를 1씩 변경
 function adjFont(id,delta){const v=parseInt(fontInputs[id].value||0)||0;setFontVar(id,v+delta);}
+// 모든 폰트 크기 input에 이벤트 리스너 추가
 fontIds.forEach(id=>{fontInputs[id].addEventListener('input',()=>{const v=parseInt(fontInputs[id].value||0)||0;setFontVar(id,v);});});
 
-/* 초기화 */
+/* ========= 초기화 함수 ========= */
+// 페이지가 처음 로드될 때 한 번 실행되어, 카드의 초기 상태를 설정합니다.
 (function init(){
   applyCardBg();
   card.style.backgroundImage=''; card.style.backgroundSize=bgFit.value;
   $$('#octoTag').style.display='none'; $$('#nameText').textContent='[이름]';
-  applyTitle(""); updateFrameAndBg();
+  applyTitle(""); 
+  updateFrameAndBg();
 
-  /* 입력칸의 기본값을 그대로 적용 (이미 :root에도 반영되어 초기 렌더가 동일) */
+  // 컨트롤 패널의 '세밀 조정' input에 설정된 초기값을 실제 카드 스타일에 적용
   posIds.forEach(id=>setPos(id, parseInt(posInputs[id].value||'0',10)||0));
   fontIds.forEach(fid=>setFontVar(fid, parseInt(fontInputs[fid].value||'0',10)||0));
 })();
 </script>
 </body>
-
 </html>
-
