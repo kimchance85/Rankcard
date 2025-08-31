@@ -1,347 +1,764 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>선물거래 랏 지킴이 • XAU • BTC • US100</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root{
-      /* 베이스 */
-      --bg:#080c1a; --bg2:#0b1022;
-      --card:#111a33; --panel:#0c1530;
-      --text:#e8eeff; --muted:#96a7cc;
-      --edge:rgba(255,255,255,.09);
-      --glow: 0 8px 30px rgba(126,123,255,.25);
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TEAM CHANCE RANK GENERATER</title>
 
-      /* 동적 테마 색 (상품별로 JS가 바꿈) */
-      --accent:#9b8cff;
-      --accent2:#34c5ff;
-      --orb1a:#9b8cff; --orb1b:#5b7dff;
-      --orb2a:#34c5ff; --orb2b:#7fb7ff;
+<style>
+  :root{
+    --cardH:720px; --ratio:1.5858; --cardW:calc(var(--cardH)/var(--ratio));
 
-      /* 상태색 */
-      --danger:#ff6b7a; --ok:#4ade80;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; padding:28px; color:var(--text);
-      background:
-        radial-gradient(1200px 600px at 15% 5%, #151b39 0%, var(--bg2) 55%, var(--bg) 100%),
-        radial-gradient(1000px 800px at 90% 10%, #141e3f55 0%, transparent 60%),
-        linear-gradient(180deg, #0b0f1d 0%, #070a15 100%);
-      font-family: "맑은 고딕", Arial, sans-serif;
-      overflow-x:hidden;
-    }
-    /* 우주 오브젝트 (테마에 따라 색이 변함) */
-    .orb{position:fixed; border-radius:50%; filter: blur(32px); opacity:.35; pointer-events:none}
-    .orb.one{
-      width:220px; height:220px; right:-60px; top:-40px;
-      background: radial-gradient(circle at 30% 30%, var(--orb1a) 0%, var(--orb1b) 50%, transparent 70%);
-      animation: float1 16s ease-in-out infinite;
-    }
-    .orb.two{
-      width:280px; height:280px; left:-80px; bottom:-60px;
-      background: radial-gradient(circle at 60% 40%, var(--orb2a) 0%, var(--orb2b) 55%, transparent 75%);
-      animation: float2 20s ease-in-out infinite;
-    }
-    @keyframes float1{0%{transform:translateY(0)}50%{transform:translateY(18px)}100%{transform:translateY(0)}}
-    @keyframes float2{0%{transform:translateY(0)}50%{transform:translateY(-14px)}100%{transform:translateY(0)}}
+    /* ===== 색/테마 팔레트 ===== */
+    --bg:#060811; --panel:#0a0f1c; --panel2:#0b1222; --line:#19243a; --soft:#273454;
+    --ink:#eaf1ff; --muted:#9aa6c8; --accent:#63e3ff; --octo-red:#ff2d55;
 
-    .box{
-      /* 가로 폭을 줄여 세로 느낌 강화 */
-      max-width: 520px; margin: 0 auto; background: linear-gradient(180deg, #121a33 0%, #0f1730 100%);
-      border:1px solid var(--edge); border-radius:16px; box-shadow: var(--glow); overflow:hidden; position:relative;
-    }
-    .head{
-      padding:26px 18px; background:linear-gradient(180deg,#1a2250 0%, #151c42 100%);
-      border-bottom:1px solid var(--edge); text-align:center; position:relative;
-    }
-    .title{
-      margin:0; font-size:28px; font-weight:900; letter-spacing:.3px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-    }
-    .sub{margin-top:8px; color:var(--muted); font-size:.93em}
-    .pill{display:inline-block; padding:2px 8px; border-radius:999px; background:#0b1730; border:1px solid var(--edge); color:#a9b9dd; font-size:12px}
+    /* 카드 바탕/테두리 */
+    --card:#0a0e16; --cardLine:#1e2a44;
 
-    .inner{padding:18px 18px 8px 18px}
-    label{font-weight:800; display:block; margin-top:12px}
-    select,input{
-      width:100%; margin-top:6px; padding:12px 12px; border-radius:10px;
-      border:1px solid var(--edge); background:#0b132c; color:var(--text); font-size:16px; outline:none;
-    }
-    /* ✅ 항상 단일 컬럼 */
-    .row3{
-      display:grid; grid-template-columns: 1fr; gap:12px;
-    }
-    .field{position:relative}
-    .pip-badge{
-      position:absolute; right:8px; bottom:8px;
-      background:#0c1836; border:1px solid var(--edge); color:#c7d6ff;
-      font-size:12px; padding:4px 8px; border-radius:999px;
-    }
+    /* ===== 초기 위치/폰트 기본값 (세밀조정과 연결) ===== */
+    --badgeY:0px;  /* 배지     ↔ #pos-badge-num    */
+    --ppY:7px;     /* 프로필   ↔ #pos-pp-num       */
+    --nameY:6px;   /* 이름     ↔ #pos-name-num     */
+    --rankY:7px;   /* 타이틀   ↔ #pos-rank-num     */
+    --brandY:11px; /* 브랜드   ↔ #pos-brand-num    */
+    --socketY:32px;/* 소켓     ↔ #pos-socket-num   */
+    --neonY:-25px; /* 네온     ↔ #pos-neon-num     */
+    --footerY:-5px;/* 하단문구 ↔ #pos-footer-num   */
 
-    button{
-      width:100%; margin-top:14px; padding:14px 12px; border:none; border-radius:12px;
-      background: linear-gradient(90deg,var(--accent), var(--accent2)); color:white; font-weight:900; font-size:1.06em; cursor:pointer;
-      box-shadow: 0 8px 22px rgba(0,0,0,.25);
-    }
-    button:hover{filter: brightness(1.05)}
+    --nameFont:30px;   /* 이름 폰트     ↔ #font-nameFont-num   */
+    --rankFont:24px;   /* 타이틀 폰트   ↔ #font-rankFont-num   */
+    --brandFont:18px;  /* 브랜드 폰트   ↔ #font-brandFont-num  */
+    --footerFont:14px; /* 하단문구 폰트 ↔ #font-footerFont-num */
 
-    .result{
-      margin-top:16px; padding:16px; border-radius:12px; background:var(--panel); border:1px solid var(--edge);
-      line-height:1.8; font-size:1.06em;
-    }
-    .muted{color:var(--muted)}
-    .kv{display:flex; justify-content:space-between; gap:12px}
-    .kv b{color:#d6e2ff}
-    .hr{height:1px; background:var(--edge); margin:12px 0}
-    .neg{color:#ff6b7a; font-weight:800}
-    .pos{color:#4ade80; font-weight:800}
+    /* 세밀조정 UI 폭 */
+    --labelW:120px; --numW:86px; --btnW:38px;
+  }
 
-    .badge{
-      margin-top:12px; padding:10px; border-radius:10px; text-align:center; font-weight:900; display:none;
-      border:1px solid var(--edge);
-    }
-    .badge.over{background:rgba(255,107,122,.10); color:#ff6b7a; border-color: rgba(255,107,122,.45)}
-    .badge.ok{background:rgba(74,222,128,.10); color:#4ade80; border-color: rgba(74,222,128,.45)}
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink);
+    font-family:system-ui,-apple-system,"Noto Sans KR",Segoe UI,Roboto,sans-serif;
+    min-height:100vh; padding:20px;
+    display:flex; justify-content:center; align-items:flex-start;
 
-    .footer{margin:14px 0 18px; text-align:center; color:#a8b8da; font-size:.9em}
-    .hint{color:var(--muted); font-size:.9em; margin-top:8px}
-    /* ✅ 설명 박스도 세로 정렬 */
-    .explain{
-      margin-top:10px; padding:12px; border-radius:12px; background:#0c1836; border:1px dashed var(--edge);
-      color:#c7d6ff; line-height:1.6; display:block;
-    }
-    .tag{display:inline-block; padding:2px 8px; border-radius:999px; background:#0c1836; border:1px solid var(--edge); color:#9fb0df; font-size:12px; margin-right:6px}
-    .simple{display:block; font-weight:800; margin-top:6px}
-  </style>
+    /* 우주/네뷸라 배경 */
+    background:
+      radial-gradient(1100px 700px at 80% -10%, #13203a 0%, transparent 60%),
+      radial-gradient(900px 600px at -10% 20%, #111b34 0%, transparent 55%),
+      linear-gradient(180deg, #050912 0%, #060811 100%);
+    position:relative; overflow-x:hidden;
+  }
+  body::before, body::after{
+    content:""; position:fixed; inset:-10% -10%; pointer-events:none; z-index:-1;
+  }
+  body::before{
+    background:
+      radial-gradient(60% 50% at 70% 10%, rgba(121,67,255,.25), transparent 60%),
+      radial-gradient(45% 40% at 20% 20%, rgba(99,227,255,.18), transparent 60%);
+    filter:blur(18px); opacity:.65; animation:nebula 16s ease-in-out infinite alternate;
+  }
+  body::after{
+    background-image:
+      radial-gradient(#ffffff 0.75px, transparent 0.75px),
+      radial-gradient(#b7d6ff 0.6px, transparent 0.6px),
+      radial-gradient(#ffffff 1px, transparent 1px);
+    background-size: 2px 2px, 3px 3px, 1px 1px;
+    background-position: 0 0, 25px 40px, 60px 90px;
+    opacity:.18; animation:twinkle 12s linear infinite;
+  }
+  @keyframes nebula { from{transform:translate3d(0,0,0)} to{transform:translate3d(-2%,1%,0)} }
+  @keyframes twinkle { from{transform:translateY(0)} to{transform:translateY(-1%)} }
+
+  .wrap{ width:min(980px, 96vw); display:grid; grid-template-columns:1.05fr .95fr; gap:16px; }
+  @media (max-width:980px){ .wrap{grid-template-columns:1fr; gap:14px} }
+
+  /* 헤더/저장 버튼 */
+  .app-title{ grid-column:1 / -1; display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+  .brandmark{
+    font-weight:900; letter-spacing:.7px; margin:0;
+    background:linear-gradient(90deg,#63e3ff 0%,#be8cff 50%,#63e3ff 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 28px rgba(99,227,255,.35);
+    font-size:20px;
+  }
+  .savebtn{
+    padding:12px 16px; border:none; border-radius:12px; font-weight:900; letter-spacing:.3px; cursor:pointer;
+    color:#041018; background-image:linear-gradient(90deg, #63e3ff, #be8cff);
+    box-shadow:0 10px 24px rgba(99,227,255,.25);
+  }
+  .savebtn:active{ transform:translateY(1px) }
+
+  /* 패널 */
+  .controls{
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0) 18%), var(--panel);
+    border:1px solid var(--line); border-radius:16px; padding:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .canvas{
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0) 18%), var(--panel2);
+    border:1px solid var(--line); border-radius:16px; padding:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05), 0 0 80px rgba(99,227,255,.12);
+  }
+
+  /* 폼 공통 */
+  .controls label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
+  .controls input,.controls select,.controls button{
+    width:100%; border-radius:10px; border:1px solid var(--soft); color:#fff;
+    background:linear-gradient(180deg, #0d1422, #0a111d);
+    padding:11px 12px; font-size:15px; outline:none;
+    transition: box-shadow .2s ease, border-color .2s ease;
+  }
+  .controls input:focus,.controls select:focus{ border-color:#2f8ab3; box-shadow:0 0 0 2px rgba(99,227,255,.25); }
+  .row{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px}
+  .row-2auto{display:grid; grid-template-columns:1fr auto; gap:8px; align-items:end}
+  .inline{display:flex; align-items:center; gap:10px}
+  .nowrap{white-space:nowrap}
+
+  .block{border:1px solid var(--line); border-radius:12px; padding:12px; background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0) 16%), #0c1220; margin-bottom:12px}
+  .block h3{margin:0 0 10px 0; font-size:14px; letter-spacing:.4px; font-weight:900; color:#cfe7ff}
+
+  /* ===== 카드 본체 ===== */
+  .card{
+    position:relative; width:var(--cardW); height:var(--cardH);
+    background:var(--card); border:1px solid var(--cardLine); border-radius:22px; overflow:hidden;
+    margin:0 auto; padding:16px 16px 200px; text-align:center; color:var(--ink);
+    background-repeat:no-repeat; background-position:center; background-size:cover;
+    box-shadow:0 16px 40px rgba(0,0,0,.45), 0 0 120px rgba(123,198,255,.15);
+  }
+  .frame{position:absolute; inset:0; border-radius:22px; pointer-events:none; z-index:10;
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.12), inset 0 0 32px rgba(99,227,255,.08)}
+  .frame-img{position:absolute; inset:0; width:100%; height:100%; object-fit:fill; border-radius:22px; pointer-events:none; z-index:11; display:none}
+
+  .badge{
+    display:inline-block; padding:10px 16px; border-radius:999px; font-weight:900; letter-spacing:.4px; font-size:24px;
+    color:#fff; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.24);
+    transform:translateY(var(--badgeY)); /* ← 세밀조정: --badgeY */
+  }
+
+  /* 프로필(원형 클리핑 + 드래그/줌) */
+  .pp{
+    width:170px; height:170px; border-radius:50%;
+    border:4px solid var(--accent);
+    margin:6px auto 12px; position:relative; background:#0b111e;
+    transform:translateY(var(--ppY)); /* ← 세밀조정: --ppY */
+    box-shadow:0 0 24px rgba(99,227,255,.18);
+  }
+  .pp-clip{
+    position:absolute; inset:4px; border-radius:50%; overflow:hidden; background:#0d1322;
+    touch-action:none; contain:paint; /* 성능 최적화용(필요시 제거 가능) */
+    box-shadow:inset 0 0 24px rgba(0,0,0,.35);
+  }
+  .pp-clip img{position:absolute; left:0; top:0; width:100%; height:auto; user-select:none; cursor:grab; display:none; image-orientation:from-image}
+  .pp-clip .placeholder{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:56px; color:#55627a}
+
+  .name{font-size:var(--nameFont); font-weight:900; margin:4px 0; transform:translateY(var(--nameY))}
+  .name .octo-tag{margin-left:8px; font-size:.72em; font-weight:900; letter-spacing:.8px; color:#ff2d55; display:none}
+  .rank{font-size:var(--rankFont); font-weight:900; letter-spacing:.8px; display:none; margin-bottom:8px; transform:translateY(var(--rankY))}
+  .brand{font-size:var(--brandFont); font-weight:800; margin:6px 0 10px; letter-spacing:.6px; text-transform:uppercase; transform:translateY(var(--brandY))}
+
+  .sockets{display:grid; justify-content:center; gap:10px; margin-top:6px; grid-template-columns:56px; transform:translateY(var(--socketY))}
+  .sockets.cols2{grid-template-columns:repeat(2,56px)}
+  .sockets.cols3{grid-template-columns:repeat(3,56px)}
+  .sockets.cols4{grid-template-columns:repeat(2,56px)}
+  .socket{
+    width:56px;height:56px;border-radius:12px;background:transparent;border:none;color:rgba(255,255,255,.32);
+    display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;outline:1px dashed rgba(255,255,255,.18);
+    position:relative;
+  }
+  .socket img{width:100%;height:100%;object-fit:contain;border-radius:12px}
+  .socket.has-img{outline:none}
+  .socket::before{
+    content:""; position:absolute; left:50%; top:50%; width:48px; height:48px; transform:translate(-50%,-50%);
+    border-radius:50%; border:1px solid rgba(255,255,255,.22); box-shadow:0 0 14px rgba(99,227,255,.08) inset;
+    pointer-events:none;
+  }
+
+  .neon-image-block{margin-top:16px; transform:translateY(var(--neonY))}
+  .neon-image-block img{max-width:80%; height:auto; display:block; margin:0 auto}
+
+  .footer-text{position:absolute; bottom:20px; left:0; right:0; font-size:var(--footerFont); font-weight:600; line-height:1.3; text-align:center; color:#fff; opacity:.92; z-index:2; transform:translateY(var(--footerY))}
+
+  /* ===== 세밀 조정 UI ===== */
+  .ctl-row{display:grid; grid-template-columns:var(--labelW) var(--btnW) var(--numW) var(--btnW); align-items:center; gap:8px; margin:8px 0;}
+  .ctl-row label{justify-self:end; text-align:right; white-space:nowrap; color:#cfe7ff; font-weight:800; padding-right:4px}
+  .num{ width:100%; text-align:center; font-variant-numeric:tabular-nums; padding:8px 10px; border-radius:8px; border:1px solid var(--soft); background:#0f1628; color:#dff1ff; }
+  .btn-icon{ width:var(--btnW); height:38px; display:flex; align-items:center; justify-content:center; border-radius:8px; border:1px solid #26324f; background:#0f192c; color:#cfe5ff; font-weight:900; cursor:pointer; }
+  .btn-icon:active{transform:translateY(1px)}
+  .chip{padding:8px 12px; border-radius:999px; border:1px solid #26324f; background:#0f192c; color:#cfe5ff; font-weight:800; cursor:pointer}
+  .chip:active{transform:translateY(1px)}
+  .tune-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  @media (max-width:980px){ .tune-grid{grid-template-columns:1fr} }
+  .fold{border:1px solid var(--line); border-radius:12px; background:#0b1324}
+  .fold-head{display:flex; align-items:center; justify-content:space-between; padding:10px 12px; cursor:pointer; user-select:none; color:#cfe7ff; font-weight:900; letter-spacing:.2px;}
+  .fold-head .caret{transition:transform .2s ease}
+  .fold[aria-expanded="true"] .fold-head .caret{transform:rotate(90deg)}
+  .fold-body{padding:8px 12px; display:none}
+  .fold[aria-expanded="true"] .fold-body{display:block}
+</style>
 </head>
 <body>
-  <!-- 우주 오브젝트 -->
-  <div class="orb one"></div>
-  <div class="orb two"></div>
+<div class="wrap">
 
-  <div class="box">
-    <div class="head">
-      <h1 class="title">선물거래 랏 지킴이</h1>
-      <div class="sub">
-        <span class="pill">손실액 = 랏 × pip × (랏당 pip 손익)</span>
-        <span class="pill">변동폭은 달러 입력 • pip 자동환산</span>
-      </div>
-    </div>
-
-    <div class="inner">
-      <!-- 상품 선택 -->
-      <label for="category">상품</label>
-      <select id="category" onchange="updateTheme(); updateExplain(); updateLimits(); updatePipHint();">
-        <option value="XAU">골드 (XAUUSD)</option>
-        <option value="BTC">비트 (BTCUSD)</option>
-        <option value="US100">나스닥 (US100)</option>
-      </select>
-
-      <!-- 심플 허용랏 설명 -->
-      <div class="explain" id="explainBox">
-        <div><span class="tag" id="tagLabel">골드 (XAUUSD)</span></div>
-        <div class="simple" id="simpleRule">10,000$ > 0.1랏 3개</div>
-      </div>
-
-      <!-- 현재 자본 기준 허용 & 오버 여부 -->
-      <div class="hint" id="limitHint"></div>
-      <div id="lotBadge" class="badge"></div>
-
-      <!-- 입력 (세로로 나열) -->
-      <div class="row3" style="margin-top:6px">
-        <div class="field">
-          <label for="asset">자본 (USD)</label>
-          <input type="number" id="asset" placeholder="예: 10000" value="10000" step="1" min="0" inputmode="decimal" oninput="updateLimits()">
-        </div>
-        <div class="field">
-          <label for="lot">랏수</label>
-          <input type="number" id="lot" placeholder="예: 0.1" step="0.01" min="0" inputmode="decimal" oninput="updateLimits()">
-        </div>
-        <div class="field">
-          <label for="moveUSD">변동폭 (달러)</label>
-          <input type="number" id="moveUSD" placeholder="예: 300" step="0.01" min="0" inputmode="decimal" oninput="updatePipHint()">
-          <div id="pipBadge" class="pip-badge">≈ - pip</div>
-        </div>
-      </div>
-
-      <button onclick="calculate()">🛰 계산하기</button>
-
-      <!-- 결과 -->
-      <div id="result" class="result" style="display:none;"></div>
-
-      <div class="footer">🚀 Take a chance, change your life ✨️</div>
-    </div>
+  <!-- 상단 타이틀/저장 -->
+  <div class="app-title">
+    <h1 class="brandmark">TEAM CHANCE&nbsp;RANK&nbsp;GENERATER</h1>
+    <button class="savebtn" id="saveBtn" type="button">📥 카드 저장</button>
   </div>
 
-  <script>
-    // ===== pip 기준 & 손익 (고정) =====
-    // pipDollar: 1 pip의 "달러 변동" (XAU:$0.1, BTC:$1, US100: pt=달러 입력과 1:1로 간주)
-    // pipValuePerLot: 1랏 × 1pip 손익 (USD)
-    const CONFIG = {
-      XAU: { label:'골드 (XAUUSD)', pipDollar:0.10, pipValuePerLot:10 },
-      BTC: { label:'비트 (BTCUSD)', pipDollar:1,    pipValuePerLot:1  },
-      US100:{ label:'나스닥 (US100)', pipDollar:1,  pipValuePerLot:1  } // pt당 $10 브로커면 이 값을 10으로 바꾸세요.
-    };
+  <!-- ===== 왼쪽: 컨트롤 패널 ===== -->
+  <div class="controls">
+    <!-- 기본/고급 탭 -->
+    <div class="tabbar" style="display:flex; gap:8px; margin-bottom:12px">
+      <button id="cat1Btn" class="savebtn" style="background-image:none;background:#0f192c;color:#cfe5ff;box-shadow:none">기본 설정</button>
+      <button id="cat2Btn" class="savebtn" style="background-image:none;background:#0f192c;color:#cfe5ff;box-shadow:none;opacity:.9">고급 설정</button>
+    </div>
 
-    // ===== 상품별 허용랏 규칙(간단 설명 전용) =====
-    const SIMPLE_RULE_TEXT = {
-      XAU: '10,000$ > 0.1랏 3개',
-      BTC: '10,000$ > 0.1랏 1개',
-      US100:'10,000$ > 0.1랏 7개'
-    };
+    <!-- 기본 설정 -->
+    <div id="cat1">
+      <!-- 이름 -->
+      <div class="block">
+        <h3>① 이름</h3>
+        <div class="row">
+          <div>
+            <label for="nameInput">표시 이름</label>
+            <input id="nameInput" type="text" placeholder="예: 김 진래" />
+          </div>
+          <div>
+            <label for="rankSelect">랭크</label>
+            <select id="rankSelect" title="랭크 선택 시 프레임/배경 자동 매핑">
+              <option value="">-- RANK --</option>
+              <option>CORE 600</option>
+              <option>CORE 1250</option>
+              <option>CORE 2500</option>
+              <option>CORE 5000</option>
+            </select>
+          </div>
+        </div>
+        <div class="inline" style="margin-top:8px">
+          <label class="nowrap" style="display:flex;align-items:center;gap:8px;margin:0">
+            <input id="octoToggle" type="checkbox" />
+            <span style="font-size:14px;color:#ff8fa3">이름옆 <b style="color:#ff2d55">OCTOPUS</b> 표시</span>
+          </label>
+        </div>
+      </div>
 
-    // 실제 계산에 쓰이는 "10,000달러당 0.1랏 개수"
-    const RULES = {
-      XAU: { lotUnit: 0.1, unitsPer10k: 3 },
-      BTC: { lotUnit: 0.1, unitsPer10k: 1 },
-      US100: { lotUnit: 0.1, unitsPer10k: 7 }
-    };
+      <!-- 프로필 -->
+      <div class="block">
+        <h3>② 프로필</h3>
+        <div class="row">
+          <div>
+            <label>프로필 사진</label>
+            <input id="photoInput" type="file" accept="image/*" />
+          </div>
+          <div>
+            <label>이미지 위치 초기화</label>
+            <button id="ppReset" class="savebtn" type="button" style="background-image:none;background:#0f192c;color:#cfe5ff;box-shadow:none">센터로 리셋</button>
+          </div>
+        </div>
+        <small style="color:var(--muted)">휠 확대/축소 · 드래그 이동 (모바일: 핀치/드래그)</small>
+      </div>
 
-    // ===== 상품별 색상 테마 (골드/주황/푸른) =====
-    const THEMES = {
-      XAU: { accent:'#d4af37', accent2:'#ffd24d', orb1a:'#ffd766', orb1b:'#d4af37', orb2a:'#fff0a6', orb2b:'#ffd24d' }, // 골드
-      BTC: { accent:'#f7931a', accent2:'#ffb347', orb1a:'#ff9f2b', orb1b:'#f7931a', orb2a:'#ffd27f', orb2b:'#ffae42' }, // 주황
-      US100: { accent:'#5b7dff', accent2:'#34c5ff', orb1a:'#5b7dff', orb1b:'#34c5ff', orb2a:'#7fb7ff', orb2b:'#5b7dff' } // 푸른
-    };
+      <!-- 소켓 -->
+      <div class="block">
+        <h3>③ 소켓</h3>
+        <div class="row-2auto" style="margin-bottom:8px">
+          <div>
+            <label>소켓 프리셋</label>
+            <select id="socketPresetSelect">
+              <option value="socket-octopusH.png">OCTOPUS H</option>
+              <option value="socket-octopusleg.png">OCTOPUS LEG</option>
+              <option value="socket-zinrailogo.png" selected>ZiNRAiLOGO (기본)</option>
+            </select>
+          </div>
+          <button class="savebtn" id="addSocketPresetBtn" type="button" style="background-image:none;background:#0f192c;color:#cfe5ff">프리셋 추가</button>
+        </div>
 
-    const categoryEl = document.getElementById('category');
-    const assetEl = document.getElementById('asset');
-    const lotEl   = document.getElementById('lot');
-    const moveUSDEl = document.getElementById('moveUSD');
+        <div class="row" style="grid-template-columns:1fr 1fr;margin-top:4px">
+          <button id="addSocketFile" class="savebtn" type="button" style="background-image:none;background:#0f192c;color:#cfe5ff">파일로 소켓 추가</button>
+          <button id="removeLast" class="savebtn" type="button" style="background-image:none;background:#1a253d;color:#cfe5ff">마지막 소켓 삭제</button>
+        </div>
+        <span id="socketInfo" style="display:block;margin-top:6px;color:#a7adc0" aria-live="polite">소켓 0개</span>
+        <input id="socketFile" type="file" accept="image/*" multiple style="display:none" />
+      </div>
 
-    const tagLabelEl = document.getElementById('tagLabel');
-    const simpleRuleEl = document.getElementById('simpleRule');
-    const limitHintEl  = document.getElementById('limitHint');
-    const lotBadgeEl   = document.getElementById('lotBadge');
-    const pipBadgeEl   = document.getElementById('pipBadge');
-    const resultEl     = document.getElementById('result');
+      <!-- 네온 -->
+      <div class="block">
+        <h3>④ 네온 이미지</h3>
+        <div class="row">
+          <div>
+            <label>네온 프리셋</label>
+            <select id="neonPresetSelect">
+              <option value="free-taccyl.png" selected>free-taccyl (기본)</option>
+              <option value="">사용 안 함</option>
+            </select>
+          </div>
+          <div>
+            <label>네온 파일</label>
+            <div class="row">
+              <button id="neonPickBtn" class="savebtn" type="button" style="background-image:none;background:#0f192c;color:#cfe5ff">파일 선택</button>
+              <button id="neonClearBtn" class="savebtn" type="button" style="background-image:none;background:#1a253d;color:#cfe5ff">네온 제거</button>
+            </div>
+            <input id="neonFile" type="file" accept="image/*" style="display:none" />
+          </div>
+        </div>
+      </div>
+    </div><!-- /cat1 -->
 
-    function fmt(n, d=2){ if(!isFinite(n)) return '-'; return Number(n).toLocaleString('en-US',{minimumFractionDigits:d, maximumFractionDigits:d}); }
-    function cfg(){ return CONFIG[categoryEl.value]; }
-    function rule(){ return RULES[categoryEl.value]; }
+    <!-- 고급 설정 -->
+    <div id="cat2" hidden>
+      <!-- 프레임/배경 -->
+      <div class="block">
+        <h3>프레임 / 배경 (수동·프리셋)</h3>
+        <div class="row">
+          <div>
+            <label>프레임 수동 설정</label>
+            <div class="row">
+              <button class="savebtn" id="pickFrameFile" type="button" style="background-image:none;background:#0f192c;color:#cfe5ff">프레임 선택</button>
+              <button class="savebtn" id="clearFrameOverride" type="button" style="background-image:none;background:#1a253d;color:#cfe5ff">🧹 해제</button>
+            </div>
+            <input id="frameFileInput" type="file" accept="image/png,image/webp,image/*" style="display:none" />
+          </div>
+          <div>
+            <label>배경 수동 설정</label>
+            <div class="row">
+              <button class="savebtn" id="pickBgFile" type="button" style="background-image:none;background:#0f192c;color:#cfe5ff">배경 선택</button>
+              <button class="savebtn" id="clearBgOverride" type="button" style="background-image:none;background:#1a253d;color:#cfe5ff">🧹 해제</button>
+            </div>
+            <input id="bgFileInput" type="file" accept="image/*" style="display:none" />
+          </div>
+        </div>
 
-    function updateTheme(){
-      const t = THEMES[categoryEl.value];
-      const root = document.documentElement;
-      root.style.setProperty('--accent', t.accent);
-      root.style.setProperty('--accent2', t.accent2);
-      root.style.setProperty('--orb1a', t.orb1a);
-      root.style.setProperty('--orb1b', t.orb1b);
-      root.style.setProperty('--orb2a', t.orb2a);
-      root.style.setProperty('--orb2b', t.orb2b);
+        <div class="row" style="margin-top:10px">
+          <div>
+            <label>배경 프리셋</label>
+            <select id="bgPresetSelect">
+              <option value="">자동(랭크 매핑)</option>
+              <option value="bg-core-600.png">bg-core-600</option>
+              <option value="bg-core-1250.png">bg-core-1250</option>
+              <option value="bg-core-2500.png">bg-core-2500</option>
+              <option value="bg-core-5000.png">bg-core-5000</option>
+            </select>
+          </div>
+          <div>
+            <label>배경 채우기 방식</label>
+            <select id="bgFit">
+              <option value="cover" selected>채우기 (cover)</option>
+              <option value="contain">맞춤 (contain)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 배경 오버레이 -->
+      <div class="block">
+        <h3>배경 오버레이</h3>
+        <div class="row">
+          <div class="inline">
+            <input id="cardBgColor" type="color" value="#111522" />
+            <small style="color:var(--muted)">색상</small>
+          </div>
+          <div class="inline" style="justify-content:space-between">
+            <input id="cardBgAlpha" type="range" min="0" max="100" value="100" />
+            <small style="color:var(--muted)"><span id="alphaVal">100</span>%</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- 세밀 조정 -->
+      <div class="block">
+        <h3>세밀 조정</h3>
+
+        <div class="tune-grid">
+          <!-- 위치 조정(토글) -->
+          <section id="fold-pos" class="fold" aria-expanded="false">
+            <div class="fold-head" role="button" tabindex="0" aria-controls="fold-pos-body">
+              <span>위치 조정</span>
+              <span class="caret">▶</span>
+            </div>
+            <div id="fold-pos-body" class="fold-body">
+              <div class="ctl-row"><label>배지</label>
+                <button class="btn-icon" data-pos="badge" data-op="-">−</button>
+                <input class="num" id="pos-badge-num" type="number" step="1" min="-120" max="120" value="0" />
+                <button class="btn-icon" data-pos="badge" data-op="+">+</button>
+              </div>
+              <div class="ctl-row"><label>프로필</label>
+                <button class="btn-icon" data-pos="pp" data-op="-">−</button>
+                <input class="num" id="pos-pp-num" type="number" step="1" min="-120" max="120" value="7" />
+                <button class="btn-icon" data-pos="pp" data-op="+">+</button>
+              </div>
+              <div class="ctl-row"><label>이름</label>
+                <button class="btn-icon" data-pos="name" data-op="-">−</button>
+                <input class="num" id="pos-name-num" type="number" step="1" min="-120" max="120" value="6" />
+                <button class="btn-icon" data-pos="name" data-op="+">+</button>
+              </div>
+              <div class="ctl-row"><label>타이틀</label>
+                <button class="btn-icon" data-pos="rank" data-op="-">−</button>
+                <input class="num" id="pos-rank-num" type="number" step="1" min="-120" max="120" value="7" />
+                <button class="btn-icon" data-pos="rank" data-op="+">+</button>
+              </div>
+              <div class="ctl-row"><label>브랜드</label>
+                <button class="btn-icon" data-pos="brand" data-op="-">−</button>
+                <input class="num" id="pos-brand-num" type="number" step="1" min="-120" max="120" value="11" />
+                <button class="btn-icon" data-pos="brand" data-op="+">+</button>
+              </div>
+              <div class="ctl-row"><label>소켓</label>
+                <button class="btn-icon" data-pos="socket" data-op="-">−</button>
+                <input class="num" id="pos-socket-num" type="number" step="1" min="-120" max="120" value="32" />
+                <button class="btn-icon" data-pos="socket" data-op="+">+</button>
+              </div>
+              <div class="ctl-row"><label>네온</label>
+                <button class="btn-icon" data-pos="neon" data-op="-">−</button>
+                <input class="num" id="pos-neon-num" type="number" step="1" min="-200" max="200" value="-25" />
+                <button class="btn-icon" data-pos="neon" data-op="+">+</button>
+              </div>
+              <div class="ctl-row"><label>하단문구</label>
+                <button class="btn-icon" data-pos="footer" data-op="-">−</button>
+                <input class="num" id="pos-footer-num" type="number" step="1" min="-120" max="120" value="-5" />
+                <button class="btn-icon" data-pos="footer" data-op="+">+</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- 폰트 조정(토글) -->
+          <section id="fold-font" class="fold" aria-expanded="false">
+            <div class="fold-head" role="button" tabindex="0" aria-controls="fold-font-body">
+              <span>폰트 조정</span>
+              <span class="caret">▶</span>
+            </div>
+            <div id="fold-font-body" class="fold-body">
+              <div class="ctl-row"><label>이름 폰트</label>
+                <button class="btn-icon" data-font="nameFont" data-op="-">−</button>
+                <input class="num" id="font-nameFont-num" type="number" step="1" min="14" max="48" value="30" />
+                <button class="btn-icon" data-font="nameFont" data-op="+">+</button>
+              </div>
+              <div class="ctl-row"><label>타이틀 폰트</label>
+                <button class="btn-icon" data-font="rankFont" data-op="-">−</button>
+                <input class="num" id="font-rankFont-num" type="number" step="1" min="12" max="40" value="24" />
+                <button class="btn-icon" data-font="rankFont" data-op="+">+</button>
+              </div>
+              <div class="ctl-row"><label>브랜드 폰트</label>
+                <button class="btn-icon" data-font="brandFont" data-op="-">−</button>
+                <input class="num" id="font-brandFont-num" type="number" step="1" min="10" max="32" value="18" />
+                <button class="btn-icon" data-font="brandFont" data-op="+">+</button>
+              </div>
+              <div class="ctl-row"><label>하단문구 폰트</label>
+                <button class="btn-icon" data-font="footerFont" data-op="-">−</button>
+                <input class="num" id="font-footerFont-num" type="number" step="1" min="10" max="28" value="14" />
+                <button class="btn-icon" data-font="footerFont" data-op="+">+</button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="inline" style="justify-content:flex-end; gap:8px; margin-top:10px">
+          <button id="tuneSave"  class="chip" type="button">저장</button>
+          <button id="tuneReset" class="chip" type="button">초기화</button>
+        </div>
+      </div>
+    </div><!-- /cat2 -->
+  </div>
+
+  <!-- ===== 오른쪽: 미리보기 캔버스 ===== -->
+  <div class="canvas">
+    <h2 style="margin:0 0 10px 0; font-size:14px; letter-spacing:.4px; font-weight:800; color:#cfe7ff">미리보기</h2>
+    <div class="card" id="card" role="img" aria-label="Team Chance 카드">
+      <div class="frame" id="frame"></div>
+      <img id="frameImg" class="frame-img" alt="" crossorigin="anonymous" />
+      <div class="badge">Congratulations!! 🎉</div>
+
+      <div class="pp" id="ppWrap">
+        <div class="pp-clip" id="ppClip">
+          <!-- [FIX] 프로필은 로컬/데이터URL을 쓰므로 crossorigin 속성 제거 -->
+          <img id="ppImg" alt="profile" draggable="false" />
+          <div class="placeholder" id="ppPlaceholder">👤</div>
+        </div>
+      </div>
+
+      <div class="name"><span id="nameText">[이름]</span><span class="octo-tag" id="octoTag">OCTOPUS</span></div>
+      <div class="rank" id="rankView"></div>
+      <div class="brand">🌟 TEAM CHANCE 🌟</div>
+      <div class="sockets" id="sockets"></div>
+
+      <div class="neon-image-block"><img id="neonImg" alt="neon text" style="display:none" crossorigin="anonymous" /></div>
+
+      <div class="footer-text">Awaken the Movement 🌊 This is ZiNRAi 🔥</div>
+    </div>
+  </div>
+</div>
+
+<!-- html2canvas: 카드 저장용 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+/* ============================================================
+   자바스크립트: 기능 구현부
+   - [FIX #1] 프로필 이미지는 DataURL로 로딩(저장 반영 안정화)
+   - [FIX #2] 저장 전 ppImg까지 모든 이미지 로드 대기
+   ============================================================ */
+
+const $$=(s)=>document.querySelector(s);
+const $all=(s,root=document)=>Array.from(root.querySelectorAll(s));
+
+/* 탭 전환 */
+const cat1Btn=$$('#cat1Btn'), cat2Btn=$$('#cat2Btn'), cat1=$$('#cat1'), cat2=$$('#cat2');
+function showCat(n){ if(n===1){cat1.hidden=false;cat2.hidden=true}else{cat1.hidden=true;cat2.hidden=false} }
+cat1Btn.addEventListener('click',()=>showCat(1));
+cat2Btn.addEventListener('click',()=>showCat(2));
+
+/* 세밀조정 접기/펼치기 */
+function bindFold(id){
+  const fold = document.getElementById(id);
+  if(!fold) return;
+  const head = fold.querySelector('.fold-head');
+  const toggle = () => {
+    const open = fold.getAttribute('aria-expanded') === 'true';
+    fold.setAttribute('aria-expanded', String(!open));
+  };
+  head.addEventListener('click', toggle);
+  head.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); toggle(); }});
+}
+bindFold('fold-pos'); bindFold('fold-font');
+
+/* CDN/프리셋 로더 */
+const COLORS={ "CORE 600":"#bfbfbf", "CORE 1250":"#4caf50", "CORE 2500":"#2196f3", "CORE 5000":"#ffeb3b" };
+const CDN_BASES=["https://cdn.jsdelivr.net/gh/kimchance85/Rankcard@master/assets/","https://cdn.jsdelivr.net/gh/kimchance85/Rankcard/assets/"];
+const EXT_CANDIDATES=['.png','.webp','.jpg','.jpeg'];
+async function loadFirstAvailable(basePathNoExt){
+  for (const base of CDN_BASES){
+    for (const ext of EXT_CANDIDATES){
+      const url=base+basePathNoExt+ext;
+      const ok=await new Promise(res=>{const img=new Image(); img.crossOrigin='anonymous'; img.onload=()=>res(true); img.onerror=()=>res(false); img.src=url;});
+      if(ok) return url;
     }
+  }
+  throw new Error('No asset: '+basePathNoExt);
+}
+function stripExt(name){return (name||'').replace(/\.(png|webp|jpg|jpeg)$/i,'');}
+const FRAME_BASES={ "CORE 600":"frame-core-600","CORE 1250":"frame-core-1250","CORE 2500":"frame-core-2500","CORE 5000":"frame-core-5000" };
+const BG_BASES   ={ "CORE 600":"bg-core-600","CORE 1250":"bg-core-1250","CORE 2500":"bg-core-2500","CORE 5000":"bg-core-5000" };
 
-    function updateExplain(){
-      const key = categoryEl.value;
-      tagLabelEl.textContent = CONFIG[key].label;
-      simpleRuleEl.textContent = SIMPLE_RULE_TEXT[key];
-      resultEl.style.display = 'none';
+/* DOM refs */
+const card=$$('#card'), frameImg=$$('#frameImg');
+const sel=$$('#rankSelect'), nameInput=$$('#nameInput'), nameText=$$('#nameText'), rankView=$$('#rankView');
+const ppClip=$$('#ppClip'), ppImg=$$('#ppImg'), ppPlaceholder=$$('#ppPlaceholder'), photoInput=$$('#photoInput'), ppReset=$$('#ppReset');
+const cardBgColor=$$('#cardBgColor'), cardBgAlpha=$$('#cardBgAlpha'), alphaVal=$$('#alphaVal'), bgFit=$$('#bgFit');
+const neonPickBtn=$$('#neonPickBtn'), neonClearBtn=$$('#neonClearBtn'), neonFile=$$('#neonFile'), neonImg=$$('#neonImg'), neonPresetSelect=$$('#neonPresetSelect');
+const socketPresetSelect=$$('#socketPresetSelect'), addSocketPresetBtn=$$('#addSocketPresetBtn');
+const socketsWrap=$$('#sockets'), addSocketFileBtn=$$('#addSocketFile'), socketFile=$$('#socketFile'), removeLastBtn=$$('#removeLast'), socketInfo=$$('#socketInfo');
+const octoToggle=$$('#octoToggle'), octoTag=$$('#octoTag');
+const saveBtn=$$('#saveBtn');
+
+/* 배경 오버레이 */
+function hexToRgb(hex){hex=hex.replace('#','');if(hex.length===3)hex=hex.split('').map(h=>h+h).join('');const n=parseInt(hex,16);return{r:(n>>16)&255,g:(n>>8)&255,b:n&255};}
+function applyCardBg(){
+  if(!cardBgColor||!cardBgAlpha) return;
+  const {r,g,b}=hexToRgb(cardBgColor.value); const a=Number(cardBgAlpha.value)/100;
+  card.style.backgroundColor=`rgba(${r},${g},${b},${a})`; if(alphaVal) alphaVal.textContent=cardBgAlpha.value;
+  const relLum=(0.2126*(r/255)**2.2 + 0.7152*(g/255)**2.2 + 0.0722*(b/255)**2.2) * a;
+  card.style.color=(relLum>0.4)?'#111':'#fff';
+}
+cardBgColor?.addEventListener('input',applyCardBg);
+cardBgAlpha?.addEventListener('input',applyCardBg);
+bgFit?.addEventListener('change',e=>{ card.style.backgroundSize=e.target.value; });
+
+/* 랭크 적용 + 프레임/배경 */
+function applyTitle(title){
+  if(title){
+    const accent=COLORS[title]||"var(--accent)";
+    rankView.style.display='block'; rankView.innerHTML=`<span style="color:${accent}">★ ${title}</span>`;
+    document.querySelector('.pp').style.borderColor=accent;
+  }else{
+    rankView.style.display='none'; rankView.innerHTML=''; document.querySelector('.pp').style.borderColor='var(--accent)';
+  }
+}
+let frameOverride=null, bgOverride=null, bgPresetOverride="", currentBgUrl="";
+async function applyFrameForRank(title){
+  if(frameOverride){ frameImg.src=frameOverride; frameImg.style.display='block'; return; }
+  const base=FRAME_BASES[title]; if(!base){ frameImg.removeAttribute('src'); frameImg.style.display='none'; return; }
+  try{ const url=await loadFirstAvailable(base); frameImg.crossOrigin='anonymous'; frameImg.src=url; frameImg.style.display='block'; }catch{ frameImg.removeAttribute('src'); frameImg.style.display='none'; }
+}
+async function applyBgForRank(title){
+  let url=""; if(bgOverride) url=bgOverride; else if(bgPresetOverride) { try{ url=await loadFirstAvailable(stripExt(bgPresetOverride)); }catch{} }
+  if(!url && title && BG_BASES[title]){ try{ url=await loadFirstAvailable(BG_BASES[title]); }catch{} }
+  currentBgUrl=url||""; card.style.backgroundImage = url?`url(${url})`:""; card.style.backgroundSize=bgFit?.value||'cover';
+}
+function updateFrameAndBg(){ const title=sel.value||""; applyTitle(title); applyFrameForRank(title); applyBgForRank(title); }
+sel.addEventListener('change',updateFrameAndBg);
+
+/* 프레임/배경 수동 */
+const pickFrameBtn=$$('#pickFrameFile'), frameFileInput=$$('#frameFileInput'), clearFrameOverrideBtn=$$('#clearFrameOverride');
+const pickBgBtn=$$('#pickBgFile'), bgFileInput=$$('#bgFileInput'), clearBgOverrideBtn=$$('#clearBgOverride');
+pickFrameBtn?.addEventListener('click',()=>frameFileInput.click());
+frameFileInput?.addEventListener('change',e=>{
+  const f=e.target.files?.[0]; if(!f) return;
+  const r=new FileReader(); r.onload=ev=>{ frameOverride=ev.target.result; updateFrameAndBg(); }; r.readAsDataURL(f); e.target.value="";
+});
+clearFrameOverrideBtn?.addEventListener('click',()=>{ frameOverride=null; updateFrameAndBg(); });
+pickBgBtn?.addEventListener('click',()=>bgFileInput.click());
+bgFileInput?.addEventListener('change',e=>{
+  const f=e.target.files?.[0]; if(!f) return;
+  const r=new FileReader(); r.onload=ev=>{ bgOverride=ev.target.result; updateFrameAndBg(); }; r.readAsDataURL(f); e.target.value="";
+});
+clearBgOverrideBtn?.addEventListener('click',()=>{ bgOverride=null; updateFrameAndBg(); });
+const bgPresetSelect=$$('#bgPresetSelect'); bgPresetSelect?.addEventListener('change',()=>{ bgPresetOverride=bgPresetSelect.value||""; updateFrameAndBg(); });
+
+/* 네온 (기본 ON) */
+neonPresetSelect?.addEventListener('change', async ()=>{
+  const v=neonPresetSelect.value;
+  if(v){ try{ const url=await loadFirstAvailable(stripExt(v)); neonImg.crossOrigin='anonymous'; neonImg.src=url; neonImg.style.display='block'; }catch{ neonImg.removeAttribute('src'); neonImg.style.display='none'; alert('네온 프리셋 로드 실패'); } }
+  else{ neonImg.removeAttribute('src'); neonImg.style.display='none'; }
+});
+neonPickBtn?.addEventListener('click',()=>neonFile.click());
+neonFile?.addEventListener('change',e=>{
+  const f=e.target.files?.[0]; if(!f) return;
+  const url=URL.createObjectURL(f); neonImg.src=url; neonImg.style.display='block'; neonImg.onload=()=>URL.revokeObjectURL(url); e.target.value="";
+});
+neonClearBtn?.addEventListener('click',()=>{ neonImg.removeAttribute('src'); neonImg.style.display='none'; neonPresetSelect.value=""; });
+
+/* 이름/OCTO */
+nameInput.addEventListener('input',()=>{ nameText.textContent=nameInput.value||"[이름]"; });
+octoToggle.addEventListener('change',()=>{ octoTag.style.display=octoToggle.checked?'inline-block':'none'; });
+
+/* ===== 프로필 드래그/줌 컨트롤 ===== */
+let imgState={naturalW:0,naturalH:0,baseW:0,baseH:0,scale:1,x:0,y:0,dragging:false,startX:0,startY:0,pinch:false,pinchD0:0,scale0:1};
+function coverFit(){const cw=ppClip.clientWidth,ch=ppClip.clientHeight,iw=imgState.naturalW,ih=imgState.naturalH;if(!iw||!ih)return;
+  if(iw/ih>=cw/ch){imgState.baseH=ch;imgState.baseW=ch*iw/ih;}else{imgState.baseW=cw;imgState.baseH=cw*ih/iw;}
+  imgState.scale=1;imgState.x=(cw-imgState.baseW)/2;imgState.y=(ch-imgState.baseH)/2;applyImgStyle();}
+function clamp(v,min,max){return Math.min(max,Math.max(min,v));}
+function applyImgStyle(){const w=imgState.baseW*imgState.scale,h=imgState.baseH*imgState.scale,cw=ppClip.clientWidth,ch=ppClip.clientHeight;const EPS=0.5;
+  const minX=cw-w-EPS,maxX=0+EPS,minY=ch-h-EPS,maxY=0+EPS;imgState.x=(w>=cw)?clamp(imgState.x,minX,maxX):(cw-w)/2;imgState.y=(h>=ch)?clamp(imgState.y,minY,maxY):(ch-h)/2;
+  ppImg.style.width=w+'px';ppImg.style.height=h+'px';ppImg.style.left=imgState.x+'px';ppImg.style.top=imgState.y+'px';}
+ppClip.addEventListener('wheel',e=>{e.preventDefault();const f=(e.deltaY<0)?1.08:0.92;const old=imgState.scale,neu=clamp(old*f,1,5);
+  const r=ppClip.getBoundingClientRect(),cx=e.clientX-r.left,cy=e.clientY-r.top;const w0=imgState.baseW*old,h0=imgState.baseH*old,w1=imgState.baseW*neu,h1=imgState.baseH*neu;
+  const dx=(cx-imgState.x)/w0,dy=(cy-imgState.y)/h0;imgState.x=cx-dx*w1;imgState.y=cy-dy*h1;imgState.scale=neu;applyImgStyle();},{passive:false});
+ppClip.addEventListener('pointerdown',e=>{if(e.pointerType && !['mouse','pen'].includes(e.pointerType)) return;e.preventDefault();ppClip.setPointerCapture(e.pointerId);imgState.dragging=true;imgState.startX=e.clientX-imgState.x;imgState.startY=e.clientY-imgState.y;});
+ppClip.addEventListener('pointermove',e=>{if(e.pointerType && !['mouse','pen'].includes(e.pointerType)) return;if(!imgState.dragging)return;imgState.x=e.clientX-imgState.startX;imgState.y=e.clientY-imgState.startY;applyImgStyle();});
+ppClip.addEventListener('pointerup',()=>{imgState.dragging=false;});
+ppClip.addEventListener('pointercancel',()=>{imgState.dragging=false;});
+function touchDistance(t){const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.hypot(dx,dy);}
+function touchCenter(t){return{x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2};}
+ppClip.addEventListener('touchstart',e=>{if(e.touches.length===1){e.preventDefault();imgState.dragging=true;imgState.startX=e.touches[0].clientX-imgState.x;imgState.startY=e.touches[0].clientY-imgState.y;}
+  else if(e.touches.length===2){e.preventDefault();imgState.pinch=true;imgState.pinchD0=touchDistance(e.touches);imgState.scale0=imgState.scale;imgState.center0=touchCenter(e.touches);}}, {passive:false});
+ppClip.addEventListener('touchmove',e=>{if(e.touches.length===1&&imgState.dragging){e.preventDefault();imgState.x=e.touches[0].clientX-imgState.startX;imgState.y=e.touches[0].clientY-imgState.startY;applyImgStyle();}
+  else if(e.touches.length===2&&imgState.pinch){e.preventDefault();const d=touchDistance(e.touches);let neu=clamp(imgState.scale0*(d/imgState.pinchD0),1,5);
+    const r=ppClip.getBoundingClientRect();const cNow=touchCenter(e.touches);const cx=cNow.x-r.left,cy=cNow.y-r.top;const old=imgState.scale,w0=imgState.baseW*old,h0=imgState.baseH*old,w1=imgState.baseW*neu,h1=imgState.baseH*neu;
+    const dx=(cx-imgState.x)/w0,dy=(cy-imgState.y)/h0;imgState.x=cx-dx*w1;imgState.y=cy-dy+h1;imgState.scale=neu;applyImgStyle();}}, {passive:false});
+ppClip.addEventListener('touchend',e=>{if(e.touches.length===0){imgState.dragging=false;imgState.pinch=false;}if(e.touches.length===1){imgState.pinch=false;}});
+
+/* 소켓 */
+function updateSocketLayout(){const n=$all('.socket',socketsWrap).length;socketsWrap.classList.remove('cols2','cols3','cols4');
+  if(n===2)socketsWrap.classList.add('cols2'); else if(n===3)socketsWrap.classList.add('cols3'); else if(n>=4)socketsWrap.classList.add('cols4');
+  socketInfo.textContent=`소켓 ${n}개`; }
+function addSocket(src){const el=document.createElement('div');el.className='socket has-img';const img=document.createElement('img');img.alt='socket';img.crossOrigin='anonymous';img.src=src;
+  el.appendChild(img); socketsWrap.appendChild(el); updateSocketLayout();}
+addSocketFileBtn?.addEventListener('click',()=>socketFile.click());
+socketFile?.addEventListener('change',e=>{(Array.from(e.target.files||[]).filter(f=>f.type.startsWith('image/'))).forEach(file=>{
+  const url=URL.createObjectURL(file); addSocket(url); setTimeout(()=>URL.revokeObjectURL(url), 10000);}); e.target.value="";});
+removeLastBtn?.addEventListener('click',()=>{const items=$all('.socket',socketsWrap);if(!items.length){alert('삭제할 소켓이 없습니다.');return;}items[items.length-1].remove();updateSocketLayout();});
+addSocketPresetBtn?.addEventListener('click', async ()=>{const file=socketPresetSelect.value; if(!file) return; try{ const url=await loadFirstAvailable(stripExt(file)); addSocket(url); }catch{ alert('소켓 프리셋 로드 실패'); }});
+
+/* ===== 저장 (카드 PNG) ===== */
+function waitForImage(el){return new Promise((resolve)=>{if(!el||!el.src||el.style.display==='none') return resolve(); if(el.complete && el.naturalWidth>0) return resolve(); el.addEventListener('load',resolve,{once:true}); el.addEventListener('error',resolve,{once:true});});}
+function preloadUrl(url){return new Promise((resolve)=>{if(!url) return resolve(); const img=new Image(); img.crossOrigin='anonymous'; img.onload=resolve; img.onerror=resolve; img.src=url;});}
+async function ensureAssetsReady(){
+  // [FIX #2] 저장 전에 프로필(ppImg)도 반드시 대기 → 저장 결과에 빠지지 않게 보장
+  const socketImgs=$all('.socket img',socketsWrap);
+  await Promise.all([ waitForImage(ppImg), waitForImage(frameImg), waitForImage(neonImg), preloadUrl(currentBgUrl), ...socketImgs.map(waitForImage) ]);
+}
+function sanitizeFileName(s){return (s||'').normalize('NFKD').replace(/[^\w.-]+/g,'_').replace(/^_+|_+$/g,'');}
+async function saveCard(){try{
+  await ensureAssetsReady();
+  await new Promise(r=>requestAnimationFrame(r));
+  const canvas=await html2canvas(card,{
+    backgroundColor:null, scale:3, scrollX:0, scrollY:0, useCORS:true,
+    imageTimeout:15000 /* 이미지 느릴 때 대기 시간 연장 */
+  });
+  const a=document.createElement('a'); const t=sel.value?`_${sel.value}`:''; const n=sanitizeFileName(nameText.textContent||'card'); a.download=`${n}${t}.png`; a.href=canvas.toDataURL(); a.click();
+}catch(err){console.error(err); alert('카드 저장 중 문제가 발생했습니다.');}}
+saveBtn.addEventListener('click',saveCard);
+
+/* ===== 세밀 조정 (위치/폰트 ↔ CSS 변수) ===== */
+const TUNE_KEY='tcrg_tuning_v1';
+const posIds=['badge','pp','name','rank','brand','socket','neon','footer'];
+const fontIds=['nameFont','rankFont','brandFont','footerFont'];
+const posNumEls=Object.fromEntries(posIds.map(id=>[id,$$('#pos-'+id+'-num')]));
+const fontNumEls=Object.fromEntries(fontIds.map(id=>[id,$$('#font-'+id+'-num')]));
+function clampToInput(input,val){const min=Number(input.min??-1e6),max=Number(input.max??1e6); return Math.min(max,Math.max(min,val));}
+function setPos(id, px){if(!Number.isFinite(px))return;px=Math.round(px);document.documentElement.style.setProperty('--'+id+'Y', px+'px'); if(posNumEls[id]) posNumEls[id].value=String(px);}
+function setFontVar(id, px){if(!Number.isFinite(px))return;px=Math.max(px,6)|0;document.documentElement.style.setProperty('--'+id, px+'px'); if(fontNumEls[id]) fontNumEls[id].value=String(px);}
+document.addEventListener('click',(e)=>{
+  const t=e.target.closest('.btn-icon'); if(!t) return;
+  if(t.dataset.pos){const id=t.dataset.pos; const input=posNumEls[id]; if(!input) return; const cur=Number(input.value||0); const next=t.dataset.op==='+'?cur-1:cur+1; setPos(id, clampToInput(input,next));}
+  if(t.dataset.font){const id=t.dataset.font; const input=fontNumEls[id]; if(!input) return; const cur=Number(input.value||0); const next=t.dataset.op==='+'?cur+1:cur-1; setFontVar(id, clampToInput(input,next));}
+});
+Object.entries(posNumEls).forEach(([id,el])=>{el?.addEventListener('input',()=>{ setPos(id, clampToInput(el, Number(el.value||0))); });});
+Object.entries(fontNumEls).forEach(([id,el])=>{el?.addEventListener('input',()=>{ setFontVar(id, clampToInput(el, Number(el.value||0))); });});
+function readTuningFromUI(){const pos={}, font={}; Object.entries(posNumEls).forEach(([k,el])=>{ if(el) pos[k]=Number(el.value||0) }); Object.entries(fontNumEls).forEach(([k,el])=>{ if(el) font[k]=Number(el.value||0) }); const overlay = cardBgColor && cardBgAlpha ? { color: cardBgColor.value, alpha: Number(cardBgAlpha.value||100) } : null; const size = bgFit ? { fit: bgFit.value } : null; return {pos,font,overlay,size};}
+function applyTuning(t){if(!t)return; if(t.pos)Object.entries(t.pos).forEach(([k,v])=>setPos(k,Number(v))); if(t.font)Object.entries(t.font).forEach(([k,v])=>setFontVar(k,Number(v))); if(t.overlay && cardBgColor && cardBgAlpha){ cardBgColor.value=t.overlay.color||cardBgColor.value; cardBgAlpha.value=String(t.overlay.alpha ?? cardBgAlpha.value); applyCardBg(); } if(t.size && bgFit && t.size.fit){ bgFit.value=t.size.fit; card.style.backgroundSize=t.size.fit; }}
+function saveTuning(){ try{ localStorage.setItem(TUNE_KEY, JSON.stringify(readTuningFromUI())); alert('세밀 조정 저장 완료'); }catch{} }
+function resetTuningToDefault(){ Object.entries(posNumEls).forEach(([k,el])=>{ if(el) setPos(k, Number(el.defaultValue||0)); }); Object.entries(fontNumEls).forEach(([k,el])=>{ if(el) setFontVar(k, Number(el.defaultValue||0)); }); if(cardBgColor && cardBgAlpha){ cardBgColor.value="#111522"; cardBgAlpha.value="100"; applyCardBg(); } if(bgFit){ bgFit.value="cover"; card.style.backgroundSize="cover"; } try{ localStorage.removeItem(TUNE_KEY); }catch{} alert('세밀 조정 초기화 완료'); }
+document.getElementById('tuneSave')?.addEventListener('click', saveTuning);
+document.getElementById('tuneReset')?.addEventListener('click', resetTuningToDefault);
+
+/* ===== [FIX #1] 프로필 업로드: DataURL로 로드 =====
+   - FileReader → dataURL 로 읽으면 html2canvas가 확실히 캔버스에 포함시킵니다.
+   - 같은 파일 재선택을 허용하기 위해 input.value 는 즉시 비웁니다. */
+photoInput?.addEventListener('change', async (e)=>{
+  const f = e.target.files && e.target.files[0];
+  photoInput.value = ""; // 같은 파일 재선택 허용
+
+  if(!f){
+    ppImg.style.display='none'; ppImg.removeAttribute('src'); ppPlaceholder.style.display='flex';
+    return;
+  }
+  if(f.type && !f.type.startsWith('image/')){ alert('이미지 파일만 업로드할 수 있어요.'); return; }
+
+  try{
+    // 파일 → DataURL(base64)
+    const dataURL = await new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(f); });
+
+    // 로드 & 표시
+    ppImg.src = dataURL;                 // [FIX] blobURL 대신 DataURL 사용
+    try{ if(ppImg.decode) await ppImg.decode(); }catch{}
+    await new Promise((res)=>{ if(ppImg.complete && ppImg.naturalWidth>0) return res(); ppImg.onload=()=>res(); });
+
+    ppImg.style.display='block'; ppPlaceholder.style.display='none';
+    imgState.naturalW = ppImg.naturalWidth; imgState.naturalH = ppImg.naturalHeight;
+    coverFit();
+  }catch(err){
+    console.error('[PP] load failed:', err);
+    ppImg.style.display='none'; ppImg.removeAttribute('src'); ppPlaceholder.style.display='flex';
+    alert('프로필 이미지를 불러오지 못했습니다. JPG/PNG/WebP로 다시 시도해 주세요.');
+  }
+});
+ppReset.addEventListener('click',()=>{ if(ppImg.src) coverFit(); });
+
+/* ===== 초기화 ===== */
+(async function init(){
+  showCat(1);
+  applyCardBg();
+  card.style.backgroundImage=''; card.style.backgroundSize=bgFit?.value || 'cover';
+  octoTag.style.display='none'; nameText.textContent='[이름]';
+  applyTitle(""); updateFrameAndBg();
+
+  // 네온 기본 프리셋
+  if(neonPresetSelect){ neonPresetSelect.value='free-taccyl.png'; neonPresetSelect.dispatchEvent(new Event('change')); }
+
+  // 기본 소켓 1개(ZiNRAiLOGO)
+  try{
+    if($all('.socket',socketsWrap).length===0){
+      const url=await loadFirstAvailable(stripExt('socket-zinrailogo.png')); addSocket(url);
     }
+  }catch{}
 
-    function allowedUnits(asset){
-      const r = rule();
-      if (!isFinite(asset) || asset <= 0) return 0;
-      return Math.floor((asset / 10000) * r.unitsPer10k); // 0.1랏 "개수"
-    }
-    function allowedMaxLot(asset){
-      const r = rule();
-      return allowedUnits(asset) * r.lotUnit; // 0.1 × 개수
-    }
+  // 세밀조정 입력값 → CSS 변수 반영
+  Object.entries(posNumEls).forEach(([k,el])=>{ if(el) setPos(k, Number(el.value||0)); });
+  Object.entries(fontNumEls).forEach(([k,el])=>{ if(el) setFontVar(k, Number(el.value||0)); });
 
-    function updateLimits(){
-      const asset = parseFloat(assetEl.value);
-      const lot   = parseFloat(lotEl.value);
-      const units = allowedUnits(asset);
-      const maxLot = allowedMaxLot(asset);
-
-      // 현재 자본 기준 허용 (동적)
-      if (units === 0){
-        limitHintEl.innerHTML = `현재 자본 기준 허용: <b>0.0랏</b> (0.1랏 기준 <b>0개</b>)`;
-      } else {
-        limitHintEl.innerHTML = `현재 자본 기준 허용: <b>${fmt(maxLot,1)}랏</b> (0.1랏 기준 <b>${units}개</b>)`;
-      }
-
-      // 랏 오버 배지
-      if (isFinite(lot) && isFinite(maxLot) && lot > maxLot){
-        lotBadgeEl.style.display = 'block';
-        lotBadgeEl.className = 'badge over';
-        lotBadgeEl.textContent = '랏 오버!';
-      } else if (isFinite(lot) && lot >= 0){
-        lotBadgeEl.style.display = 'block';
-        lotBadgeEl.className = 'badge ok';
-        lotBadgeEl.textContent = '허용 범위';
-      } else {
-        lotBadgeEl.style.display = 'none';
-      }
-    }
-
-    // 달러 → pip 자동 환산 배지
-    function updatePipHint(){
-      const c = cfg();
-      const key = categoryEl.value;
-      const moveUSD = parseFloat(moveUSDEl.value);
-      if (!isFinite(moveUSD) || moveUSD < 0){
-        pipBadgeEl.textContent = '≈ - pip';
-        return;
-      }
-      const pip = moveUSD / c.pipDollar; // 공통 환산
-      const unitHint = (key==='US100') ? 'pip(=pt)' : 'pip';
-      pipBadgeEl.textContent = `≈ ${fmt(pip, 2)} ${unitHint}`;
-    }
-
-    function calculate(){
-      const c = cfg();
-      const key = categoryEl.value;
-
-      const asset = parseFloat(assetEl.value);
-      const lot   = parseFloat(lotEl.value);
-      const moveUSD  = parseFloat(moveUSDEl.value);
-
-      if (isNaN(asset) || isNaN(lot) || isNaN(moveUSD)) { alert('모든 값을 입력해주세요!'); return; }
-      if (asset <= 0) { alert('자본(USD)은 0보다 커야 합니다.'); return; }
-      if (lot < 0 || moveUSD < 0) { alert('랏수와 변동폭(달러)은 0 이상이어야 합니다.'); return; }
-
-      // 달러 → pip 환산
-      const pip = moveUSD / c.pipDollar;
-
-      // 손실액: 랏 × pip × (랏당 pip 손익)
-      const loss = lot * pip * c.pipValuePerLot;
-      const pct  = (loss / asset) * 100;
-      const remain = asset - loss;
-
-      const unitHint = (key==='US100') ? 'pip(=pt)' : 'pip';
-
-      resultEl.innerHTML =
-        `<div class="kv"><div>변동폭</div><div><b>$${fmt(moveUSD,2)}</b> → ≈ ${fmt(pip,2)} ${unitHint}</div></div>` +
-        `<div class="hr"></div>` +
-        `<div class="kv"><div>예상 손실액</div><div class="neg">-$${fmt(loss,2)}</div></div>` +
-        `<div class="kv"><div>자본 대비 손실률</div><div><b>${fmt(pct,2)}%</b></div></div>` +
-        `<div class="kv"><div>남은 금액</div><div class="${remain>=0?'pos':'neg'}">$${fmt(remain,2)}</div></div>`;
-      resultEl.style.display = 'block';
-
-      updateLimits(); // 계산 후에도 허용 랏/오버 갱신
-    }
-
-    // 초기화
-    (function init(){
-      categoryEl.value = 'XAU';
-      updateTheme();
-      updateExplain();
-      updateLimits();
-      updatePipHint();
-
-      // Enter로 계산
-      [assetEl, lotEl, moveUSDEl].forEach(el=>{
-        el.addEventListener('keydown', e=>{ if(e.key==='Enter') calculate(); });
-      });
-
-      // 상품 바꿀 때도 즉시 계산 반영(선택)
-      categoryEl.addEventListener('change', ()=>{ if(resultEl.style.display!=='none'){ calculate(); }});
-    })();
-  </script>
+  // 저장값이 있으면 불러오기
+  try{ const raw=localStorage.getItem(TUNE_KEY); if(raw){ applyTuning(JSON.parse(raw)); } }catch{}
+})();
+</script>
 </body>
 </html>
