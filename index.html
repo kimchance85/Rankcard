@@ -9,19 +9,29 @@
   :root{
     --cardH:720px; --ratio:1.5858; --cardW:calc(var(--cardH)/var(--ratio));
 
-    /* Palette */
+    /* ===== 색/테마 팔레트 ===== */
     --bg:#060811; --panel:#0a0f1c; --panel2:#0b1222; --line:#19243a; --soft:#273454;
     --ink:#eaf1ff; --muted:#9aa6c8; --accent:#63e3ff; --octo-red:#ff2d55;
 
-    /* Card */
+    /* 카드 바탕/테두리 */
     --card:#0a0e16; --cardLine:#1e2a44;
 
-    /* positions (JS) */
-    --badgeY:0px; --ppY:7px; --nameY:6px; --rankY:7px; --brandY:11px; --socketY:32px; --neonY:-25px; --footerY:-5px;
-    /* font sizes (JS) */
-    --nameFont:30px; --rankFont:24px; --brandFont:18px; --footerFont:14px;
+    /* ===== 초기 위치/폰트 기본값 (세밀조정과 연결) ===== */
+    --badgeY:0px;  /* 배지     ↔ #pos-badge-num    */
+    --ppY:7px;     /* 프로필   ↔ #pos-pp-num       */
+    --nameY:6px;   /* 이름     ↔ #pos-name-num     */
+    --rankY:7px;   /* 타이틀   ↔ #pos-rank-num     */
+    --brandY:11px; /* 브랜드   ↔ #pos-brand-num    */
+    --socketY:32px;/* 소켓     ↔ #pos-socket-num   */
+    --neonY:-25px; /* 네온     ↔ #pos-neon-num     */
+    --footerY:-5px;/* 하단문구 ↔ #pos-footer-num   */
 
-    /* UI widths */
+    --nameFont:30px;   /* 이름 폰트     ↔ #font-nameFont-num   */
+    --rankFont:24px;   /* 타이틀 폰트   ↔ #font-rankFont-num   */
+    --brandFont:18px;  /* 브랜드 폰트   ↔ #font-brandFont-num  */
+    --footerFont:14px; /* 하단문구 폰트 ↔ #font-footerFont-num */
+
+    /* 세밀조정 UI 폭 */
     --labelW:120px; --numW:86px; --btnW:38px;
   }
 
@@ -31,6 +41,8 @@
     font-family:system-ui,-apple-system,"Noto Sans KR",Segoe UI,Roboto,sans-serif;
     min-height:100vh; padding:20px;
     display:flex; justify-content:center; align-items:flex-start;
+
+    /* 우주/네뷸라 배경 */
     background:
       radial-gradient(1100px 700px at 80% -10%, #13203a 0%, transparent 60%),
       radial-gradient(900px 600px at -10% 20%, #111b34 0%, transparent 55%),
@@ -61,7 +73,7 @@
   .wrap{ width:min(980px, 96vw); display:grid; grid-template-columns:1.05fr .95fr; gap:16px; }
   @media (max-width:980px){ .wrap{grid-template-columns:1fr; gap:14px} }
 
-  /* Header */
+  /* 헤더/저장 버튼 */
   .app-title{ grid-column:1 / -1; display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
   .brandmark{
     font-weight:900; letter-spacing:.7px; margin:0;
@@ -77,7 +89,7 @@
   }
   .savebtn:active{ transform:translateY(1px) }
 
-  /* Panels */
+  /* 패널 */
   .controls{
     background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0) 18%), var(--panel);
     border:1px solid var(--line); border-radius:16px; padding:14px;
@@ -89,7 +101,7 @@
     box-shadow:0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05), 0 0 80px rgba(99,227,255,.12);
   }
 
-  /* Basic controls */
+  /* 폼 공통 */
   .controls label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
   .controls input,.controls select,.controls button{
     width:100%; border-radius:10px; border:1px solid var(--soft); color:#fff;
@@ -97,19 +109,16 @@
     padding:11px 12px; font-size:15px; outline:none;
     transition: box-shadow .2s ease, border-color .2s ease;
   }
-  .controls input:focus,.controls select:focus{
-    border-color:#2f8ab3; box-shadow:0 0 0 2px rgba(99,227,255,.25);
-  }
+  .controls input:focus,.controls select:focus{ border-color:#2f8ab3; box-shadow:0 0 0 2px rgba(99,227,255,.25); }
   .row{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px}
   .row-2auto{display:grid; grid-template-columns:1fr auto; gap:8px; align-items:end}
   .inline{display:flex; align-items:center; gap:10px}
   .nowrap{white-space:nowrap}
 
-  /* Section blocks */
   .block{border:1px solid var(--line); border-radius:12px; padding:12px; background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0) 16%), #0c1220; margin-bottom:12px}
   .block h3{margin:0 0 10px 0; font-size:14px; letter-spacing:.4px; font-weight:900; color:#cfe7ff}
 
-  /* Card */
+  /* ===== 카드 본체 ===== */
   .card{
     position:relative; width:var(--cardW); height:var(--cardH);
     background:var(--card); border:1px solid var(--cardLine); border-radius:22px; overflow:hidden;
@@ -124,20 +133,21 @@
   .badge{
     display:inline-block; padding:10px 16px; border-radius:999px; font-weight:900; letter-spacing:.4px; font-size:24px;
     color:#fff; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.24);
-    transform:translateY(var(--badgeY));
+    transform:translateY(var(--badgeY)); /* ← 세밀조정: --badgeY */
   }
 
-  /* Profile */
+  /* 프로필(원형 클리핑 + 드래그/줌) */
   .pp{
     width:170px; height:170px; border-radius:50%;
     border:4px solid var(--accent);
     margin:6px auto 12px; position:relative; background:#0b111e;
-    transform:translateY(var(--ppY));
+    transform:translateY(var(--ppY)); /* ← 세밀조정: --ppY */
     box-shadow:0 0 24px rgba(99,227,255,.18);
   }
   .pp-clip{
     position:absolute; inset:4px; border-radius:50%; overflow:hidden; background:#0d1322;
-    touch-action:none; contain:paint; box-shadow:inset 0 0 24px rgba(0,0,0,.35);
+    touch-action:none; contain:paint; /* 성능 최적화용(필요시 제거 가능) */
+    box-shadow:inset 0 0 24px rgba(0,0,0,.35);
   }
   .pp-clip img{position:absolute; left:0; top:0; width:100%; height:auto; user-select:none; cursor:grab; display:none; image-orientation:from-image}
   .pp-clip .placeholder{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:56px; color:#55627a}
@@ -169,35 +179,18 @@
 
   .footer-text{position:absolute; bottom:20px; left:0; right:0; font-size:var(--footerFont); font-weight:600; line-height:1.3; text-align:center; color:#fff; opacity:.92; z-index:2; transform:translateY(var(--footerY))}
 
-  /* ===== Simple tune rows (label | - | number | +) ===== */
-  .ctl-row{
-    display:grid; grid-template-columns:var(--labelW) var(--btnW) var(--numW) var(--btnW);
-    align-items:center; gap:8px; margin:8px 0;
-  }
+  /* ===== 세밀 조정 UI ===== */
+  .ctl-row{display:grid; grid-template-columns:var(--labelW) var(--btnW) var(--numW) var(--btnW); align-items:center; gap:8px; margin:8px 0;}
   .ctl-row label{justify-self:end; text-align:right; white-space:nowrap; color:#cfe7ff; font-weight:800; padding-right:4px}
-
-  .num{ width:100%; text-align:center; font-variant-numeric:tabular-nums;
-    padding:8px 10px; border-radius:8px; border:1px solid var(--soft); background:#0f1628; color:#dff1ff; }
-
-  .btn-icon{
-    width:var(--btnW); height:38px; display:flex; align-items:center; justify-content:center;
-    border-radius:8px; border:1px solid #26324f; background:#0f192c; color:#cfe5ff; font-weight:900; cursor:pointer;
-  }
+  .num{ width:100%; text-align:center; font-variant-numeric:tabular-nums; padding:8px 10px; border-radius:8px; border:1px solid var(--soft); background:#0f1628; color:#dff1ff; }
+  .btn-icon{ width:var(--btnW); height:38px; display:flex; align-items:center; justify-content:center; border-radius:8px; border:1px solid #26324f; background:#0f192c; color:#cfe5ff; font-weight:900; cursor:pointer; }
   .btn-icon:active{transform:translateY(1px)}
-
   .chip{padding:8px 12px; border-radius:999px; border:1px solid #26324f; background:#0f192c; color:#cfe5ff; font-weight:800; cursor:pointer}
   .chip:active{transform:translateY(1px)}
-
-  /* ===== Fold (토글 접기/펼치기) ===== */
   .tune-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
   @media (max-width:980px){ .tune-grid{grid-template-columns:1fr} }
-
   .fold{border:1px solid var(--line); border-radius:12px; background:#0b1324}
-  .fold-head{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:10px 12px; cursor:pointer; user-select:none;
-    color:#cfe7ff; font-weight:900; letter-spacing:.2px;
-  }
+  .fold-head{display:flex; align-items:center; justify-content:space-between; padding:10px 12px; cursor:pointer; user-select:none; color:#cfe7ff; font-weight:900; letter-spacing:.2px;}
   .fold-head .caret{transition:transform .2s ease}
   .fold[aria-expanded="true"] .fold-head .caret{transform:rotate(90deg)}
   .fold-body{padding:8px 12px; display:none}
@@ -207,14 +200,15 @@
 <body>
 <div class="wrap">
 
-  <!-- Header -->
+  <!-- 상단 타이틀/저장 -->
   <div class="app-title">
     <h1 class="brandmark">TEAM CHANCE&nbsp;RANK&nbsp;GENERATER</h1>
     <button class="savebtn" id="saveBtn" type="button">📥 카드 저장</button>
   </div>
 
-  <!-- CONTROLS -->
+  <!-- ===== 왼쪽: 컨트롤 패널 ===== -->
   <div class="controls">
+    <!-- 기본/고급 탭 -->
     <div class="tabbar" style="display:flex; gap:8px; margin-bottom:12px">
       <button id="cat1Btn" class="savebtn" style="background-image:none;background:#0f192c;color:#cfe5ff;box-shadow:none">기본 설정</button>
       <button id="cat2Btn" class="savebtn" style="background-image:none;background:#0f192c;color:#cfe5ff;box-shadow:none;opacity:.9">고급 설정</button>
@@ -371,12 +365,12 @@
         </div>
       </div>
 
-      <!-- 세밀 조정 (가로 2열 + 토글 접힘) -->
+      <!-- 세밀 조정 -->
       <div class="block">
         <h3>세밀 조정</h3>
 
         <div class="tune-grid">
-          <!-- 위치 조정(토글, 기본 접힘) -->
+          <!-- 위치 조정(토글) -->
           <section id="fold-pos" class="fold" aria-expanded="false">
             <div class="fold-head" role="button" tabindex="0" aria-controls="fold-pos-body">
               <span>위치 조정</span>
@@ -426,7 +420,7 @@
             </div>
           </section>
 
-          <!-- 폰트 조정(토글, 기본 접힘) -->
+          <!-- 폰트 조정(토글) -->
           <section id="fold-font" class="fold" aria-expanded="false">
             <div class="fold-head" role="button" tabindex="0" aria-controls="fold-font-body">
               <span>폰트 조정</span>
@@ -465,7 +459,7 @@
     </div><!-- /cat2 -->
   </div>
 
-  <!-- PREVIEW -->
+  <!-- ===== 오른쪽: 미리보기 캔버스 ===== -->
   <div class="canvas">
     <h2 style="margin:0 0 10px 0; font-size:14px; letter-spacing:.4px; font-weight:800; color:#cfe7ff">미리보기</h2>
     <div class="card" id="card" role="img" aria-label="Team Chance 카드">
@@ -475,7 +469,8 @@
 
       <div class="pp" id="ppWrap">
         <div class="pp-clip" id="ppClip">
-          <img id="ppImg" alt="profile" crossorigin="anonymous" draggable="false" />
+          <!-- [FIX] 프로필은 로컬/데이터URL을 쓰므로 crossorigin 속성 제거 -->
+          <img id="ppImg" alt="profile" draggable="false" />
           <div class="placeholder" id="ppPlaceholder">👤</div>
         </div>
       </div>
@@ -492,11 +487,16 @@
   </div>
 </div>
 
-<!-- libs -->
+<!-- html2canvas: 카드 저장용 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-/* ===== helpers ===== */
+/* ============================================================
+   자바스크립트: 기능 구현부
+   - [FIX #1] 프로필 이미지는 DataURL로 로딩(저장 반영 안정화)
+   - [FIX #2] 저장 전 ppImg까지 모든 이미지 로드 대기
+   ============================================================ */
+
 const $$=(s)=>document.querySelector(s);
 const $all=(s,root=document)=>Array.from(root.querySelectorAll(s));
 
@@ -506,7 +506,7 @@ function showCat(n){ if(n===1){cat1.hidden=false;cat2.hidden=true}else{cat1.hidd
 cat1Btn.addEventListener('click',()=>showCat(1));
 cat2Btn.addEventListener('click',()=>showCat(2));
 
-/* Fold(토글) */
+/* 세밀조정 접기/펼치기 */
 function bindFold(id){
   const fold = document.getElementById(id);
   if(!fold) return;
@@ -518,10 +518,9 @@ function bindFold(id){
   head.addEventListener('click', toggle);
   head.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); toggle(); }});
 }
-bindFold('fold-pos');
-bindFold('fold-font');
+bindFold('fold-pos'); bindFold('fold-font');
 
-/* CDN/프리셋 */
+/* CDN/프리셋 로더 */
 const COLORS={ "CORE 600":"#bfbfbf", "CORE 1250":"#4caf50", "CORE 2500":"#2196f3", "CORE 5000":"#ffeb3b" };
 const CDN_BASES=["https://cdn.jsdelivr.net/gh/kimchance85/Rankcard@master/assets/","https://cdn.jsdelivr.net/gh/kimchance85/Rankcard/assets/"];
 const EXT_CANDIDATES=['.png','.webp','.jpg','.jpeg'];
@@ -563,7 +562,7 @@ cardBgColor?.addEventListener('input',applyCardBg);
 cardBgAlpha?.addEventListener('input',applyCardBg);
 bgFit?.addEventListener('change',e=>{ card.style.backgroundSize=e.target.value; });
 
-/* 랭크 & 프레임/배경 */
+/* 랭크 적용 + 프레임/배경 */
 function applyTitle(title){
   if(title){
     const accent=COLORS[title]||"var(--accent)";
@@ -587,7 +586,7 @@ async function applyBgForRank(title){
 function updateFrameAndBg(){ const title=sel.value||""; applyTitle(title); applyFrameForRank(title); applyBgForRank(title); }
 sel.addEventListener('change',updateFrameAndBg);
 
-/* 파일 업로드 (프레임/배경) */
+/* 프레임/배경 수동 */
 const pickFrameBtn=$$('#pickFrameFile'), frameFileInput=$$('#frameFileInput'), clearFrameOverrideBtn=$$('#clearFrameOverride');
 const pickBgBtn=$$('#pickBgFile'), bgFileInput=$$('#bgFileInput'), clearBgOverrideBtn=$$('#clearBgOverride');
 pickFrameBtn?.addEventListener('click',()=>frameFileInput.click());
@@ -621,7 +620,7 @@ neonClearBtn?.addEventListener('click',()=>{ neonImg.removeAttribute('src'); neo
 nameInput.addEventListener('input',()=>{ nameText.textContent=nameInput.value||"[이름]"; });
 octoToggle.addEventListener('change',()=>{ octoTag.style.display=octoToggle.checked?'inline-block':'none'; });
 
-/* 프로필 드래그/줌 */
+/* ===== 프로필 드래그/줌 컨트롤 ===== */
 let imgState={naturalW:0,naturalH:0,baseW:0,baseH:0,scale:1,x:0,y:0,dragging:false,startX:0,startY:0,pinch:false,pinchD0:0,scale0:1};
 function coverFit(){const cw=ppClip.clientWidth,ch=ppClip.clientHeight,iw=imgState.naturalW,ih=imgState.naturalH;if(!iw||!ih)return;
   if(iw/ih>=cw/ch){imgState.baseH=ch;imgState.baseW=ch*iw/ih;}else{imgState.baseW=cw;imgState.baseH=cw*ih/iw;}
@@ -644,174 +643,98 @@ ppClip.addEventListener('touchstart',e=>{if(e.touches.length===1){e.preventDefau
 ppClip.addEventListener('touchmove',e=>{if(e.touches.length===1&&imgState.dragging){e.preventDefault();imgState.x=e.touches[0].clientX-imgState.startX;imgState.y=e.touches[0].clientY-imgState.startY;applyImgStyle();}
   else if(e.touches.length===2&&imgState.pinch){e.preventDefault();const d=touchDistance(e.touches);let neu=clamp(imgState.scale0*(d/imgState.pinchD0),1,5);
     const r=ppClip.getBoundingClientRect();const cNow=touchCenter(e.touches);const cx=cNow.x-r.left,cy=cNow.y-r.top;const old=imgState.scale,w0=imgState.baseW*old,h0=imgState.baseH*old,w1=imgState.baseW*neu,h1=imgState.baseH*neu;
-    const dx=(cx-imgState.x)/w0,dy=(cy-imgState.y)/h0;imgState.x=cx-dx*w1;imgState.y=cy-dy*h1;imgState.scale=neu;applyImgStyle();}}, {passive:false});
+    const dx=(cx-imgState.x)/w0,dy=(cy-imgState.y)/h0;imgState.x=cx-dx*w1;imgState.y=cy-dy+h1;imgState.scale=neu;applyImgStyle();}}, {passive:false});
 ppClip.addEventListener('touchend',e=>{if(e.touches.length===0){imgState.dragging=false;imgState.pinch=false;}if(e.touches.length===1){imgState.pinch=false;}});
 
 /* 소켓 */
-function updateSocketLayout(){
-  const n=$all('.socket',socketsWrap).length;
-  socketsWrap.classList.remove('cols2','cols3','cols4');
+function updateSocketLayout(){const n=$all('.socket',socketsWrap).length;socketsWrap.classList.remove('cols2','cols3','cols4');
   if(n===2)socketsWrap.classList.add('cols2'); else if(n===3)socketsWrap.classList.add('cols3'); else if(n>=4)socketsWrap.classList.add('cols4');
-  socketInfo.textContent=`소켓 ${n}개`;
-}
-function addSocket(src){
-  const el=document.createElement('div');el.className='socket has-img';
-  const img=document.createElement('img');img.alt='socket';img.crossOrigin='anonymous';img.src=src;
-  el.appendChild(img); socketsWrap.appendChild(el); updateSocketLayout();
-}
+  socketInfo.textContent=`소켓 ${n}개`; }
+function addSocket(src){const el=document.createElement('div');el.className='socket has-img';const img=document.createElement('img');img.alt='socket';img.crossOrigin='anonymous';img.src=src;
+  el.appendChild(img); socketsWrap.appendChild(el); updateSocketLayout();}
 addSocketFileBtn?.addEventListener('click',()=>socketFile.click());
-socketFile?.addEventListener('change',e=>{
-  (Array.from(e.target.files||[]).filter(f=>f.type.startsWith('image/'))).forEach(file=>{
-    const url=URL.createObjectURL(file); addSocket(url); setTimeout(()=>URL.revokeObjectURL(url), 10000);
-  }); e.target.value="";
-});
-removeLastBtn?.addEventListener('click',()=>{
-  const items=$all('.socket',socketsWrap); if(!items.length){alert('삭제할 소켓이 없습니다.');return;}
-  items[items.length-1].remove(); updateSocketLayout();
-});
-addSocketPresetBtn?.addEventListener('click', async ()=>{
-  const file=socketPresetSelect.value; if(!file) return;
-  try{ const url=await loadFirstAvailable(stripExt(file)); addSocket(url); }catch{ alert('소켓 프리셋 로드 실패'); }
-});
+socketFile?.addEventListener('change',e=>{(Array.from(e.target.files||[]).filter(f=>f.type.startsWith('image/'))).forEach(file=>{
+  const url=URL.createObjectURL(file); addSocket(url); setTimeout(()=>URL.revokeObjectURL(url), 10000);}); e.target.value="";});
+removeLastBtn?.addEventListener('click',()=>{const items=$all('.socket',socketsWrap);if(!items.length){alert('삭제할 소켓이 없습니다.');return;}items[items.length-1].remove();updateSocketLayout();});
+addSocketPresetBtn?.addEventListener('click', async ()=>{const file=socketPresetSelect.value; if(!file) return; try{ const url=await loadFirstAvailable(stripExt(file)); addSocket(url); }catch{ alert('소켓 프리셋 로드 실패'); }});
 
-/* 저장 (카드 PNG) */
+/* ===== 저장 (카드 PNG) ===== */
 function waitForImage(el){return new Promise((resolve)=>{if(!el||!el.src||el.style.display==='none') return resolve(); if(el.complete && el.naturalWidth>0) return resolve(); el.addEventListener('load',resolve,{once:true}); el.addEventListener('error',resolve,{once:true});});}
 function preloadUrl(url){return new Promise((resolve)=>{if(!url) return resolve(); const img=new Image(); img.crossOrigin='anonymous'; img.onload=resolve; img.onerror=resolve; img.src=url;});}
-async function ensureAssetsReady(){const socketImgs=$all('.socket img',socketsWrap); await Promise.all([ waitForImage(frameImg), waitForImage(neonImg), preloadUrl(currentBgUrl), ...socketImgs.map(waitForImage) ]);}
+async function ensureAssetsReady(){
+  // [FIX #2] 저장 전에 프로필(ppImg)도 반드시 대기 → 저장 결과에 빠지지 않게 보장
+  const socketImgs=$all('.socket img',socketsWrap);
+  await Promise.all([ waitForImage(ppImg), waitForImage(frameImg), waitForImage(neonImg), preloadUrl(currentBgUrl), ...socketImgs.map(waitForImage) ]);
+}
 function sanitizeFileName(s){return (s||'').normalize('NFKD').replace(/[^\w.-]+/g,'_').replace(/^_+|_+$/g,'');}
-async function saveCard(){try{await ensureAssetsReady(); await new Promise(r=>requestAnimationFrame(r)); const canvas=await html2canvas(card,{backgroundColor:null,scale:3,scrollX:0,scrollY:0,useCORS:true});
+async function saveCard(){try{
+  await ensureAssetsReady();
+  await new Promise(r=>requestAnimationFrame(r));
+  const canvas=await html2canvas(card,{
+    backgroundColor:null, scale:3, scrollX:0, scrollY:0, useCORS:true,
+    imageTimeout:15000 /* 이미지 느릴 때 대기 시간 연장 */
+  });
   const a=document.createElement('a'); const t=sel.value?`_${sel.value}`:''; const n=sanitizeFileName(nameText.textContent||'card'); a.download=`${n}${t}.png`; a.href=canvas.toDataURL(); a.click();
 }catch(err){console.error(err); alert('카드 저장 중 문제가 발생했습니다.');}}
 saveBtn.addEventListener('click',saveCard);
 
-/* ===== 세밀 조정: 숫자 + +/- ===== */
+/* ===== 세밀 조정 (위치/폰트 ↔ CSS 변수) ===== */
 const TUNE_KEY='tcrg_tuning_v1';
 const posIds=['badge','pp','name','rank','brand','socket','neon','footer'];
 const fontIds=['nameFont','rankFont','brandFont','footerFont'];
 const posNumEls=Object.fromEntries(posIds.map(id=>[id,$$('#pos-'+id+'-num')]));
 const fontNumEls=Object.fromEntries(fontIds.map(id=>[id,$$('#font-'+id+'-num')]));
 function clampToInput(input,val){const min=Number(input.min??-1e6),max=Number(input.max??1e6); return Math.min(max,Math.max(min,val));}
-
-/* setPos: px값 그대로 사용 (CSS 규칙: +px = 아래, -px = 위)
-   요구사항: 위치는 [+] 클릭 → '위로'(수치 1 감소), [-] 클릭 → '아래로'(수치 1 증가) */
-function setPos(id, px){
-  if(!Number.isFinite(px)) return; px=Math.round(px);
-  document.documentElement.style.setProperty('--'+id+'Y', px+'px');
-  if(posNumEls[id]) posNumEls[id].value = String(px);
-}
-function setFontVar(id, px){
-  if(!Number.isFinite(px)) return; px=Math.max(px,6)|0;
-  document.documentElement.style.setProperty('--'+id, px+'px');
-  if(fontNumEls[id]) fontNumEls[id].value = String(px);
-}
-
-/* 버튼 델타 */
+function setPos(id, px){if(!Number.isFinite(px))return;px=Math.round(px);document.documentElement.style.setProperty('--'+id+'Y', px+'px'); if(posNumEls[id]) posNumEls[id].value=String(px);}
+function setFontVar(id, px){if(!Number.isFinite(px))return;px=Math.max(px,6)|0;document.documentElement.style.setProperty('--'+id, px+'px'); if(fontNumEls[id]) fontNumEls[id].value=String(px);}
 document.addEventListener('click',(e)=>{
   const t=e.target.closest('.btn-icon'); if(!t) return;
-
-  /* 위치 버튼 */
-  if(t.dataset.pos){
-    const id=t.dataset.pos; const input=posNumEls[id]; if(!input) return;
-    const cur=Number(input.value||0);
-    const next = t.dataset.op==='+' ? cur-1 : cur+1; // +는 위로(값 감소), -는 아래로(값 증가)
-    setPos(id, clampToInput(input, next));
-  }
-
-  /* 폰트 버튼 */
-  if(t.dataset.font){
-    const id=t.dataset.font; const input=fontNumEls[id]; if(!input) return;
-    const cur=Number(input.value||0);
-    const next = t.dataset.op==='+' ? cur+1 : cur-1; // +는 크게, -는 작게
-    setFontVar(id, clampToInput(input, next));
-  }
+  if(t.dataset.pos){const id=t.dataset.pos; const input=posNumEls[id]; if(!input) return; const cur=Number(input.value||0); const next=t.dataset.op==='+'?cur-1:cur+1; setPos(id, clampToInput(input,next));}
+  if(t.dataset.font){const id=t.dataset.font; const input=fontNumEls[id]; if(!input) return; const cur=Number(input.value||0); const next=t.dataset.op==='+'?cur+1:cur-1; setFontVar(id, clampToInput(input,next));}
 });
-
-/* 숫자 직접 입력 */
-Object.entries(posNumEls).forEach(([id,el])=>{
-  el?.addEventListener('input',()=>{ setPos(id, clampToInput(el, Number(el.value||0))); });
-});
-Object.entries(fontNumEls).forEach(([id,el])=>{
-  el?.addEventListener('input',()=>{ setFontVar(id, clampToInput(el, Number(el.value||0))); });
-});
-
-/* 저장/초기화(세밀조정만) */
-function readTuningFromUI(){
-  const pos={}, font={};
-  Object.entries(posNumEls).forEach(([k,el])=>{ if(el) pos[k]=Number(el.value||0) });
-  Object.entries(fontNumEls).forEach(([k,el])=>{ if(el) font[k]=Number(el.value||0) });
-  const overlay = cardBgColor && cardBgAlpha ? { color: cardBgColor.value, alpha: Number(cardBgAlpha.value||100) } : null;
-  const size = bgFit ? { fit: bgFit.value } : null;
-  return {pos,font,overlay,size};
-}
-function applyTuning(t){
-  if(!t) return;
-  if(t.pos) Object.entries(t.pos).forEach(([k,v])=>setPos(k,Number(v)));
-  if(t.font) Object.entries(t.font).forEach(([k,v])=>setFontVar(k,Number(v)));
-  if(t.overlay && cardBgColor && cardBgAlpha){
-    cardBgColor.value=t.overlay.color||cardBgColor.value;
-    cardBgAlpha.value=String(t.overlay.alpha ?? cardBgAlpha.value);
-    applyCardBg();
-  }
-  if(t.size && bgFit && t.size.fit){ bgFit.value=t.size.fit; card.style.backgroundSize=t.size.fit; }
-}
+Object.entries(posNumEls).forEach(([id,el])=>{el?.addEventListener('input',()=>{ setPos(id, clampToInput(el, Number(el.value||0))); });});
+Object.entries(fontNumEls).forEach(([id,el])=>{el?.addEventListener('input',()=>{ setFontVar(id, clampToInput(el, Number(el.value||0))); });});
+function readTuningFromUI(){const pos={}, font={}; Object.entries(posNumEls).forEach(([k,el])=>{ if(el) pos[k]=Number(el.value||0) }); Object.entries(fontNumEls).forEach(([k,el])=>{ if(el) font[k]=Number(el.value||0) }); const overlay = cardBgColor && cardBgAlpha ? { color: cardBgColor.value, alpha: Number(cardBgAlpha.value||100) } : null; const size = bgFit ? { fit: bgFit.value } : null; return {pos,font,overlay,size};}
+function applyTuning(t){if(!t)return; if(t.pos)Object.entries(t.pos).forEach(([k,v])=>setPos(k,Number(v))); if(t.font)Object.entries(t.font).forEach(([k,v])=>setFontVar(k,Number(v))); if(t.overlay && cardBgColor && cardBgAlpha){ cardBgColor.value=t.overlay.color||cardBgColor.value; cardBgAlpha.value=String(t.overlay.alpha ?? cardBgAlpha.value); applyCardBg(); } if(t.size && bgFit && t.size.fit){ bgFit.value=t.size.fit; card.style.backgroundSize=t.size.fit; }}
 function saveTuning(){ try{ localStorage.setItem(TUNE_KEY, JSON.stringify(readTuningFromUI())); alert('세밀 조정 저장 완료'); }catch{} }
-function resetTuningToDefault(){
-  Object.entries(posNumEls).forEach(([k,el])=>{ if(el) setPos(k, Number(el.defaultValue||0)); });
-  Object.entries(fontNumEls).forEach(([k,el])=>{ if(el) setFontVar(k, Number(el.defaultValue||0)); });
-  if(cardBgColor && cardBgAlpha){ cardBgColor.value="#111522"; cardBgAlpha.value="100"; applyCardBg(); }
-  if(bgFit){ bgFit.value="cover"; card.style.backgroundSize="cover"; }
-  try{ localStorage.removeItem(TUNE_KEY); }catch{}
-  alert('세밀 조정 초기화 완료');
-}
+function resetTuningToDefault(){ Object.entries(posNumEls).forEach(([k,el])=>{ if(el) setPos(k, Number(el.defaultValue||0)); }); Object.entries(fontNumEls).forEach(([k,el])=>{ if(el) setFontVar(k, Number(el.defaultValue||0)); }); if(cardBgColor && cardBgAlpha){ cardBgColor.value="#111522"; cardBgAlpha.value="100"; applyCardBg(); } if(bgFit){ bgFit.value="cover"; card.style.backgroundSize="cover"; } try{ localStorage.removeItem(TUNE_KEY); }catch{} alert('세밀 조정 초기화 완료'); }
 document.getElementById('tuneSave')?.addEventListener('click', saveTuning);
 document.getElementById('tuneReset')?.addEventListener('click', resetTuningToDefault);
 
-/* 프로필 파일 로드: 안정화(같은 파일 재선택, decode 보정, 실패시 안내) */
+/* ===== [FIX #1] 프로필 업로드: DataURL로 로드 =====
+   - FileReader → dataURL 로 읽으면 html2canvas가 확실히 캔버스에 포함시킵니다.
+   - 같은 파일 재선택을 허용하기 위해 input.value 는 즉시 비웁니다. */
 photoInput?.addEventListener('change', async (e)=>{
   const f = e.target.files && e.target.files[0];
-  // 같은 파일 다시 선택 가능하도록 즉시 초기화
-  photoInput.value = "";
+  photoInput.value = ""; // 같은 파일 재선택 허용
 
   if(!f){
-    ppImg.style.display='none';
-    ppImg.removeAttribute('src');
-    ppPlaceholder.style.display='flex';
+    ppImg.style.display='none'; ppImg.removeAttribute('src'); ppPlaceholder.style.display='flex';
     return;
   }
-  if(f.type && !f.type.startsWith('image/')){
-    alert('이미지 파일만 업로드할 수 있어요.');
-    return;
-  }
+  if(f.type && !f.type.startsWith('image/')){ alert('이미지 파일만 업로드할 수 있어요.'); return; }
 
-  const blobUrl = URL.createObjectURL(f);
   try{
-    ppImg.src = blobUrl;
-    // decode 지원 브라우저 우선
+    // 파일 → DataURL(base64)
+    const dataURL = await new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(f); });
+
+    // 로드 & 표시
+    ppImg.src = dataURL;                 // [FIX] blobURL 대신 DataURL 사용
     try{ if(ppImg.decode) await ppImg.decode(); }catch{}
-    await new Promise(res=>{
-      if(ppImg.complete && ppImg.naturalWidth>0) return res();
-      ppImg.onload = ()=>res();
-    });
+    await new Promise((res)=>{ if(ppImg.complete && ppImg.naturalWidth>0) return res(); ppImg.onload=()=>res(); });
 
-    ppImg.style.display='block';
-    ppPlaceholder.style.display='none';
-
-    imgState.naturalW = ppImg.naturalWidth;
-    imgState.naturalH = ppImg.naturalHeight;
+    ppImg.style.display='block'; ppPlaceholder.style.display='none';
+    imgState.naturalW = ppImg.naturalWidth; imgState.naturalH = ppImg.naturalHeight;
     coverFit();
   }catch(err){
     console.error('[PP] load failed:', err);
-    ppImg.style.display='none';
-    ppImg.removeAttribute('src');
-    ppPlaceholder.style.display='flex';
+    ppImg.style.display='none'; ppImg.removeAttribute('src'); ppPlaceholder.style.display='flex';
     alert('프로필 이미지를 불러오지 못했습니다. JPG/PNG/WebP로 다시 시도해 주세요.');
-  }finally{
-    URL.revokeObjectURL(blobUrl);
   }
 });
 ppReset.addEventListener('click',()=>{ if(ppImg.src) coverFit(); });
 
-/* 초기화 */
+/* ===== 초기화 ===== */
 (async function init(){
   showCat(1);
   applyCardBg();
@@ -819,7 +742,7 @@ ppReset.addEventListener('click',()=>{ if(ppImg.src) coverFit(); });
   octoTag.style.display='none'; nameText.textContent='[이름]';
   applyTitle(""); updateFrameAndBg();
 
-  // 네온 기본 프리셋 적용
+  // 네온 기본 프리셋
   if(neonPresetSelect){ neonPresetSelect.value='free-taccyl.png'; neonPresetSelect.dispatchEvent(new Event('change')); }
 
   // 기본 소켓 1개(ZiNRAiLOGO)
@@ -829,13 +752,13 @@ ppReset.addEventListener('click',()=>{ if(ppImg.src) coverFit(); });
     }
   }catch{}
 
-  // 입력 초기값을 CSS 변수에 반영
+  // 세밀조정 입력값 → CSS 변수 반영
   Object.entries(posNumEls).forEach(([k,el])=>{ if(el) setPos(k, Number(el.value||0)); });
   Object.entries(fontNumEls).forEach(([k,el])=>{ if(el) setFontVar(k, Number(el.value||0)); });
 
-  // 저장값 자동 적용
+  // 저장값이 있으면 불러오기
   try{ const raw=localStorage.getItem(TUNE_KEY); if(raw){ applyTuning(JSON.parse(raw)); } }catch{}
 })();
 </script>
 </body>
-  </html>
+</html>
